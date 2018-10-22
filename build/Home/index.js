@@ -63,19 +63,27 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */,
 /* 1 */,
 /* 2 */,
-/* 3 */
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $app_template$ = __webpack_require__(4)
-var $app_style$ = __webpack_require__(5)
-var $app_script$ = __webpack_require__(6)
+var $app_template$ = __webpack_require__(12)
+var $app_style$ = __webpack_require__(13)
+var $app_script$ = __webpack_require__(14)
 
 $app_define$('@app-component/index', [], function($app_require$, $app_exports$, $app_module$){
      $app_script$($app_module$, $app_exports$, $app_require$)
@@ -90,7 +98,7 @@ $app_bootstrap$('@app-component/index',{ packagerVersion: '0.0.5'})
 
 
 /***/ }),
-/* 4 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -197,16 +205,18 @@ module.exports = {
                     "exp": function () {return this.month.day},
                     "value": "day"
                   },
-                  "classList": function () {return ['item-text', this.choosedDays.indexOf(this.day)>-1?'choosename':'']},
+                  "classList": function () {return ['item-text', (this.choosedDays.indexOf(this.day)>-1&&this.day.curMonth)?'choosename':'']},
                   "events": {
-                    "click": function (evt) {this.getCurDay(this.day,evt)}
+                    "click": function (evt) {this.getCurDay(this.day,evt)},
+                    "longpress": function (evt) {this.showRecord(this.day,evt)}
                   },
                   "children": [
                     {
                       "type": "text",
                       "attr": {
-                        "value": function () {return new Date(this.day).getDate()}
-                      }
+                        "value": function () {return new Date(this.day.day).getDate()}
+                      },
+                      "classList": function () {return [this.day.curMonth?'':'lightgray']}
                     }
                   ]
                 }
@@ -215,12 +225,21 @@ module.exports = {
           ]
         }
       ]
+    },
+    {
+      "type": "div",
+      "attr": {
+        "show": "showPop"
+      },
+      "classList": [
+        "out-pop"
+      ]
     }
   ]
 }
 
 /***/ }),
-/* 5 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -297,11 +316,21 @@ module.exports = {
   ".choosename": {
     "backgroundColor": "#FFAEB9",
     "borderRadius": "35px"
+  },
+  ".lightgray": {
+    "color": "#cccccc"
+  },
+  ".out-pop": {
+    "position": "fixed",
+    "width": "100%",
+    "height": "100%",
+    "top": "0px",
+    "left": "0px"
   }
 }
 
 /***/ }),
-/* 6 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = function(module, exports, $app_require$){'use strict';
@@ -324,7 +353,8 @@ exports.default = {
     week: ['一', '二', '三', '四', '五', '六', '日'],
     year: new Date(),
     allDays: [],
-    choosedDays: []
+    choosedDays: [],
+    showPop: false
   },
   onInit: function onInit() {
     var date = new Date();
@@ -340,6 +370,7 @@ exports.default = {
       _this.$element('alist').scrollTo({ index: 1 });
     }, 100);
   },
+  showRecord: function showRecord(day) {},
   getMounth: function getMounth(day) {
     var monthObject = {
       month: day,
@@ -348,11 +379,13 @@ exports.default = {
     var date = new Date(day);
     var firstDay = date.getDay();
     firstDay = firstDay === 0 ? 7 : firstDay;
-    console.log(firstDay + 'day' + this.dateFormat(date));
     for (var i = 1; i < firstDay; i++) {
       var day1 = new Date(date);
       day1.setDate(day1.getDate() - i);
-      monthObject.day.unshift(this.dateFormat(day1));
+      monthObject.day.unshift({
+        curMonth: false,
+        day: this.dateFormat(day1)
+      });
     }
     date.setMonth(date.getMonth() + 1);
     date.setDate(date.getDate() - 1);
@@ -360,13 +393,22 @@ exports.default = {
     for (var j = 0; j < haveDays; j++) {
       var day2 = new Date(day);
       day2.setDate(day2.getDate() + j);
-      monthObject.day.push(this.dateFormat(day2));
+      monthObject.day.push({
+        curMonth: true,
+        day: this.dateFormat(day2)
+      });
     }
     var lastDay = date.getDay();
-    for (var k = 1; k < 7 - lastDay + 1; k++) {
-      var day3 = new Date(date);
-      day3.setDate(day3.getDate() + k);
-      monthObject.day.push(this.dateFormat(day3));
+    console.log(lastDay + 'day' + this.dateFormat(date));
+    if (lastDay !== 0) {
+      for (var k = 1; k < 7 - lastDay + 1; k++) {
+        var day3 = new Date(date);
+        day3.setDate(day3.getDate() + k);
+        monthObject.day.push({
+          curMonth: false,
+          day: this.dateFormat(day3)
+        });
+      }
     }
     this.allDays.unshift(monthObject);
   },
@@ -384,7 +426,15 @@ exports.default = {
     this.year = event;
   },
   getCurDay: function getCurDay(day) {
-    this.choosedDays.push(day);
+    this.showPop = true;
+    if (day.curMonth) {
+      var index = this.choosedDays.indexOf(day);
+      if (index > -1) {
+        this.choosedDays.splice(index, 1);
+      } else {
+        this.choosedDays.push(day);
+      }
+    }
   },
   routeDetail: function routeDetail() {
     _system2.default.push({

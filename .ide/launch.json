@@ -1,0 +1,26 @@
+{
+    "version": "1.0.0",
+    "configurations": [
+        {
+            "type": "quick",
+            "request": "launch",
+            "name": "Lightening Debug",
+            "description": "快应用快速调试器,直接打开调试器",
+            "stopOnEntry": true
+        },
+        {
+            "type": "onekey",
+            "request": "launch",
+            "name": "Quick Debug",
+            "description": "快应用一键调试器,一键安装引擎和调试APK,并打开调试器",
+            "stopOnEntry": true
+        },
+        {
+            "type": "run",
+            "request": "launch",
+            "name": "Run Application",
+            "description": "非调试启动快应用",
+            "stopOnEntry": true
+        }
+    ]
+}

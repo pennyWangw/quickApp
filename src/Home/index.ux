@@ -1,73 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <!-- template里只能有一个根节点 -->
-  <div class="demo-page">
-    <text class="top-title">{{new Date(year).getFullYear()}}</text>
-    <list id="alist" class="content-page" onscrolltop="getDatas">
-      <list-item class="month-div" type="product" for="month in allDays" onappear="getCurYear(month.month)">
-        <div class="month-num item-text"><text>{{new Date(month.month).getMonth() + 1}}月</text></div>
-        <div class="week-div"><div for="weekDay in week" class="item-text"><text>{{weekDay}}</text></div></div>
-        <div class="week-div flex-wrap"><div for="day in month.day" class="item-text {{choosedDays.indexOf(day) > -1 ? 'choosename' : ''}}" onclick="getCurDay(day)"><text>{{new Date(day).getDate()}}</text></div></div>
-      </list-item>
-    </list>
-
-  </div>
-</template>
-<style>
-  .demo-page {
-    /*position: relative;*/
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .top-title {
-    position: fixed;
-    left: 0;
-    top: 0;
-    font-size: 40px;
-    text-align: center;
-    line-height: 100px;
-    height: 100px;
-    background: linear-gradient(#FFAEB9, #ffffff);
-    color: #2E2E2E;
-    width: 100%;
-  }
-
-  .content-page {
-    margin-top: 100px;
-    width: 100%;
-    padding: 0 15px;
-    height: 100%;
-  }
-  .month-div{
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-  }
-  .week-div{
-    align-items: center;
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-  }
-  .item-text{
-    margin: 14px;
-    width: 70px;
-    text-align: center;
-    height: 70px;
-  }
-  .item-text text{
-    width: 100%;
-    text-align: center;
-  }
-  .flex-wrap{
-    flex-wrap: wrap;
-  }
-  .choosename{
-    background-color: #FFAEB9;
-    border-radius: 35px;
-  }
-=======
     <!-- template里只能有一个根节点 -->
     <div class="demo-page">
         <text class="top-title">{{new Date(year).getFullYear()}}</text>
@@ -91,7 +22,7 @@
                 </div>
             </list-item>
         </list>
-        <div class="out-pop" show="showPop"></div>
+        <div class="out-pop" show="showPop"><text>12424</text></div>
     </div>
 </template>
 <style>
@@ -158,15 +89,15 @@
     .lightgray {
         color: #cccccc;
     }
-    .out-pop{
+
+    .out-pop {
         position: fixed;
         width: 100%;
         height: 100%;
-        background: #000000;
+        background-color: #000000;
         top: 0;
         left: 0;
     }
->>>>>>> 更新弹框
 </style>
 
 <script>
@@ -179,40 +110,25 @@
       week: ['一', '二', '三', '四', '五', '六', '日'],
       year: new Date(),
       allDays: [],
-<<<<<<< HEAD
-      choosedDays: []
-    },
-    onInit () {
-=======
       choosedDays: [],
       showPop: false
     },
     onInit() {
->>>>>>> 更新弹框
       let date = new Date()
       let curDate = `${date.getFullYear()}-${date.getMonth() + 1}-01`
       this.getMounth(curDate)
       date.setMonth(date.getMonth() - 1)
       this.getMounth(`${date.getFullYear()}-${date.getMonth() + 1}-01`)
     },
-<<<<<<< HEAD
-    onShow () {
-      setTimeout(() => {
-        this.$element('alist').scrollTo({index:1})
-      }, 100)
-    },
-    getMounth (day) {
-=======
     onShow() {
       setTimeout(() => {
         this.$element('alist').scrollTo({index: 1})
       }, 100)
     },
-    showRecord(day){
+    showRecord(day) {
 
     },
     getMounth(day) {
->>>>>>> 更新弹框
       let monthObject = {
         month: day,
         day: []
@@ -220,13 +136,6 @@
       let date = new Date(day)
       let firstDay = date.getDay()
       firstDay = firstDay === 0 ? 7 : firstDay
-<<<<<<< HEAD
-      console.log(firstDay + 'day' + this.dateFormat(date))
-      for (let i = 1; i < firstDay; i++) {
-        let day1 = new Date(date)
-        day1.setDate(day1.getDate() - i)
-        monthObject.day.unshift(this.dateFormat(day1))
-=======
       for (let i = 1; i < firstDay; i++) {
         let day1 = new Date(date)
         day1.setDate(day1.getDate() - i)
@@ -234,7 +143,6 @@
           curMonth: false,
           day: this.dateFormat(day1)
         })
->>>>>>> 更新弹框
       }
       date.setMonth(date.getMonth() + 1)
       date.setDate(date.getDate() - 1)
@@ -242,23 +150,6 @@
       for (let j = 0; j < haveDays; j++) {
         let day2 = new Date(day)
         day2.setDate(day2.getDate() + j)
-<<<<<<< HEAD
-        monthObject.day.push(this.dateFormat(day2))
-      }
-      let lastDay = date.getDay()
-      for (let k = 1; k < (7 - lastDay + 1); k++) {
-        let day3 = new Date(date)
-        day3.setDate(day3.getDate() + k)
-        monthObject.day.push(this.dateFormat(day3))
-      }
-      this.allDays.unshift(monthObject)
-    },
-    dateFormat (date) {
-      let day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-      return day
-    },
-    getDatas () {
-=======
         monthObject.day.push({
           curMonth: true,
           day: this.dateFormat(day2)
@@ -283,23 +174,11 @@
       return day
     },
     getDatas() {
->>>>>>> 更新弹框
       let month = new Date(this.allDays[0].month)
       month.setMonth(month.getMonth() - 1)
       this.year = month
       this.getMounth(this.dateFormat(month))
     },
-<<<<<<< HEAD
-    getCurYear (event) {
-      this.year = event
-    },
-    getCurDay (day) {
-      this.choosedDays.push(day)
-    },
-    routeDetail () {
-      // 跳转到应用内的某个页面，router用法详见：文档->接口->页面路由
-      router.push ({
-=======
     getCurYear(event) {
       this.year = event
     },
@@ -317,7 +196,6 @@
     routeDetail() {
       // 跳转到应用内的某个页面，router用法详见：文档->接口->页面路由
       router.push({
->>>>>>> 更新弹框
         uri: '/Detail'
       })
     }
