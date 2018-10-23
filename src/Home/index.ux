@@ -22,83 +22,31 @@
                 </div>
             </list-item>
         </list>
-        <div class="out-pop" show="showPop"><text>12424</text></div>
+        <div class="out-pop" if="{{showPop}}">
+            <div class="center-pop">
+                <div class="close-cont">
+                    <div class="close" onclick="closePop()">
+                        <text class="close-text">x</text>
+                    </div>
+                </div>
+                <text class="center-text">{{clickDay.day}}</text>
+                <div class="content-pop">
+                    <div class="row-inline">
+                        <text>体温:</text>
+                        <input value="" onchange="enterkeyclick" class="input-class" maxlength="5">
+                    </div>
+                    <text if="{{showTemPo}}" class="worn-text">请输入34.00 - 42.00的数字！</text>
+                    <div class="row-inline">
+                        <text>生活:</text>
+                        <input checked="{{sexLife}}" type="checkbox" onchange="enterkeyclick" maxlength="5">
+                        <picker type="time" value="{{sexTime}}" class="picker" onchange="chooseTime"></picker>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </template>
-<style>
-    .demo-page {
-        /*position: relative;*/
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .top-title {
-        position: fixed;
-        left: 0;
-        top: 0;
-        font-size: 40px;
-        text-align: center;
-        line-height: 100px;
-        height: 100px;
-        background: linear-gradient(#FFAEB9, #ffffff);
-        color: #2E2E2E;
-        width: 100%;
-    }
-
-    .content-page {
-        margin-top: 100px;
-        width: 100%;
-        padding: 0 15px;
-        height: 100%;
-    }
-
-    .month-div {
-        width: 100%;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .week-div {
-        align-items: center;
-        flex-direction: row;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .item-text {
-        margin: 14px;
-        width: 70px;
-        text-align: center;
-        height: 70px;
-    }
-
-    .item-text text {
-        width: 100%;
-        text-align: center;
-    }
-
-    .flex-wrap {
-        flex-wrap: wrap;
-    }
-
-    .choosename {
-        background-color: #FFAEB9;
-        border-radius: 35px;
-    }
-
-    .lightgray {
-        color: #cccccc;
-    }
-
-    .out-pop {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        background-color: #000000;
-        top: 0;
-        left: 0;
-    }
-</style>
 
 <script>
   import router from '@system.router'
@@ -111,7 +59,14 @@
       year: new Date(),
       allDays: [],
       choosedDays: [],
-      showPop: false
+      showPop: true,
+      clickDay: {
+        day: '2018-10-10'
+      },
+      showTemPo: false,
+      tempValue: 34,
+      sexLife: false,
+      sexTime: '请选择时间'
     },
     onInit() {
       let date = new Date()
@@ -190,8 +145,27 @@
           this.choosedDays.splice(index, 1)
         } else {
           this.choosedDays.push(day)
+          this.clickDay = day
         }
       }
+    },
+    closePop() {
+      this.showPop = false
+    },
+    enterkeyclick (e) {
+      console.log(34 < e.value)
+      if (!(34 < e.value && e.value < 42)) {
+        this.showTemPo = true
+      } else {
+        this.showTemPo = false
+        this.tempValue = e.value
+      }
+    },
+    closeTemPo () {
+      this.showTemPo = false
+    },
+    chooseTime (val) {
+      this.sexTime = (val.hour < 10 ? ('0' + val.hour) : val.hour) + ':' + val.minute
     },
     routeDetail() {
       // 跳转到应用内的某个页面，router用法详见：文档->接口->页面路由
@@ -201,3 +175,157 @@
     }
   }
 </script>
+
+<style>
+    .demo-page {
+        /*position: relative;*/
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .top-title {
+        position: fixed;
+        left: 0;
+        top: 0;
+        font-size: 40px;
+        text-align: center;
+        line-height: 100px;
+        height: 100px;
+        background: linear-gradient(#FFAEB9, #ffffff);
+        color: #2E2E2E;
+        width: 100%;
+    }
+
+    .content-page {
+        margin-top: 100px;
+        width: 100%;
+        padding: 0 15px;
+        height: 100%;
+    }
+
+    .month-div {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .week-div {
+        align-items: center;
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .item-text {
+        margin: 14px;
+        width: 70px;
+        text-align: center;
+        height: 70px;
+    }
+
+    .item-text text {
+        width: 100%;
+        text-align: center;
+    }
+
+    .flex-wrap {
+        flex-wrap: wrap;
+    }
+
+    .choosename {
+        background-color: #FFAEB9;
+        border-radius: 35px;
+    }
+
+    .lightgray {
+        color: #cccccc;
+    }
+
+    .out-pop {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        top: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .center-pop {
+        width: 70%;
+        height: 40%;
+        background-color: #efefef;
+        border-radius: 10px;
+        padding: 15px;
+        flex-direction: column;
+    }
+    .tip-pop{
+        width: 60%;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        height: 90px;
+        background-color: #efefef;
+        border-radius: 10px;
+    }
+    .worn-text{
+        color: #EE6AA7;
+        margin-left: 90px;
+        font-size: 24px;
+    }
+
+    .close-cont {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .close {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        justify-content: center;
+        /*align-content: center;*/
+        border: 2px solid #EE6AA7;
+    }
+
+    .close-text {
+        color: #EE6AA7;
+        font-size: 26px;
+        margin-top: -5px;
+    }
+    .center-text{
+        align-self: center;
+    }
+    .content-pop{
+        padding: 0 30px;
+        flex-direction: column;
+    }
+    .input-class{
+        border: 2px solid #EE6AA7;
+        border-radius: 8px;
+        font-size: 36px;
+        margin-left: 30px;
+        padding: 6px 20px;
+        color: #EE6AA7;
+        width: 70%;
+    }
+    .mask-class{
+        mask-color: rgba(0,0,0,1)
+    }
+    .right-input{
+        flex-direction: column;
+    }
+    .row-inline{
+        flex-direction: row;
+        margin-top: 20px;
+    }
+    .picker{
+        /*width: 200px;*/
+        /*border: 2px solid #EE6AA7;*/
+        border-radius: 10px;
+        color: #FFAEB9;
+        padding: 0px 20px;
+    }
+</style>

@@ -228,11 +228,146 @@ module.exports = {
     },
     {
       "type": "div",
-      "attr": {
-        "show": "showPop"
-      },
+      "attr": {},
       "classList": [
         "out-pop"
+      ],
+      "shown": function () {return this.showPop},
+      "children": [
+        {
+          "type": "div",
+          "attr": {},
+          "classList": [
+            "center-pop"
+          ],
+          "children": [
+            {
+              "type": "div",
+              "attr": {},
+              "classList": [
+                "close-cont"
+              ],
+              "children": [
+                {
+                  "type": "div",
+                  "attr": {},
+                  "classList": [
+                    "close"
+                  ],
+                  "events": {
+                    "click": function (evt) {this.closePop(evt)}
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "attr": {
+                        "value": "x"
+                      },
+                      "classList": [
+                        "close-text"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "attr": {
+                "value": function () {return this.clickDay.day}
+              },
+              "classList": [
+                "center-text"
+              ]
+            },
+            {
+              "type": "div",
+              "attr": {},
+              "classList": [
+                "content-pop"
+              ],
+              "children": [
+                {
+                  "type": "div",
+                  "attr": {},
+                  "classList": [
+                    "row-inline"
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "attr": {
+                        "value": "体温:"
+                      }
+                    },
+                    {
+                      "type": "input",
+                      "attr": {
+                        "value": "",
+                        "maxlength": "5"
+                      },
+                      "events": {
+                        "change": "enterkeyclick"
+                      },
+                      "classList": [
+                        "input-class"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "attr": {
+                    "value": "请输入34.00 - 42.00的数字！"
+                  },
+                  "shown": function () {return this.showTemPo},
+                  "classList": [
+                    "worn-text"
+                  ]
+                },
+                {
+                  "type": "div",
+                  "attr": {},
+                  "classList": [
+                    "row-inline"
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "attr": {
+                        "value": "性生活:"
+                      }
+                    },
+                    {
+                      "type": "input",
+                      "attr": {
+                        "checked": function () {return this.sexLife},
+                        "type": "checkbox",
+                        "maxlength": "5"
+                      },
+                      "events": {
+                        "change": "enterkeyclick"
+                      }
+                    },
+                    {
+                      "type": "picker",
+                      "attr": {
+                        "type": "time",
+                        "value": function () {return this.sexTime}
+                      },
+                      "classList": [
+                        "picker"
+                      ],
+                      "events": {
+                        "change": "chooseTime"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
       ]
     }
   ]
@@ -324,8 +459,109 @@ module.exports = {
     "position": "fixed",
     "width": "100%",
     "height": "100%",
+    "backgroundColor": "rgba(0,0,0,0.6)",
     "top": "0px",
-    "left": "0px"
+    "left": "0px",
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "center"
+  },
+  ".center-pop": {
+    "width": "70%",
+    "height": "40%",
+    "backgroundColor": "#efefef",
+    "borderRadius": "10px",
+    "paddingTop": "15px",
+    "paddingRight": "15px",
+    "paddingBottom": "15px",
+    "paddingLeft": "15px",
+    "flexDirection": "column"
+  },
+  ".tip-pop": {
+    "width": "60%",
+    "alignItems": "center",
+    "alignContent": "center",
+    "justifyContent": "center",
+    "height": "90px",
+    "backgroundColor": "#efefef",
+    "borderRadius": "10px"
+  },
+  ".worn-text": {
+    "color": "#EE6AA7",
+    "marginLeft": "90px",
+    "fontSize": "24px"
+  },
+  ".close-cont": {
+    "width": "100%",
+    "justifyContent": "flex-end"
+  },
+  ".close": {
+    "width": "40px",
+    "height": "40px",
+    "borderRadius": "20px",
+    "justifyContent": "center",
+    "borderTopWidth": "2px",
+    "borderRightWidth": "2px",
+    "borderBottomWidth": "2px",
+    "borderLeftWidth": "2px",
+    "borderStyle": "solid",
+    "borderTopColor": "#EE6AA7",
+    "borderRightColor": "#EE6AA7",
+    "borderBottomColor": "#EE6AA7",
+    "borderLeftColor": "#EE6AA7"
+  },
+  ".close-text": {
+    "color": "#EE6AA7",
+    "fontSize": "26px",
+    "marginTop": "-5px"
+  },
+  ".center-text": {
+    "alignSelf": "center"
+  },
+  ".content-pop": {
+    "paddingTop": "0px",
+    "paddingRight": "30px",
+    "paddingBottom": "0px",
+    "paddingLeft": "30px",
+    "flexDirection": "column"
+  },
+  ".input-class": {
+    "borderTopWidth": "2px",
+    "borderRightWidth": "2px",
+    "borderBottomWidth": "2px",
+    "borderLeftWidth": "2px",
+    "borderStyle": "solid",
+    "borderTopColor": "#EE6AA7",
+    "borderRightColor": "#EE6AA7",
+    "borderBottomColor": "#EE6AA7",
+    "borderLeftColor": "#EE6AA7",
+    "borderRadius": "8px",
+    "fontSize": "36px",
+    "marginLeft": "30px",
+    "paddingTop": "6px",
+    "paddingRight": "20px",
+    "paddingBottom": "6px",
+    "paddingLeft": "20px",
+    "color": "#EE6AA7",
+    "width": "70%"
+  },
+  ".mask-class": {
+    "maskColor": "rgba(0,0,0,1)"
+  },
+  ".right-input": {
+    "flexDirection": "column"
+  },
+  ".row-inline": {
+    "flexDirection": "row",
+    "marginTop": "20px"
+  },
+  ".picker": {
+    "borderRadius": "10px",
+    "color": "#FFAEB9",
+    "paddingTop": "0px",
+    "paddingRight": "20px",
+    "paddingBottom": "0px",
+    "paddingLeft": "20px"
   }
 }
 
@@ -354,7 +590,14 @@ exports.default = {
     year: new Date(),
     allDays: [],
     choosedDays: [],
-    showPop: false
+    showPop: true,
+    clickDay: {
+      day: '2018-10-10'
+    },
+    showTemPo: false,
+    tempValue: 34,
+    sexLife: false,
+    sexTime: '请选择时间'
   },
   onInit: function onInit() {
     var date = new Date();
@@ -433,8 +676,27 @@ exports.default = {
         this.choosedDays.splice(index, 1);
       } else {
         this.choosedDays.push(day);
+        this.clickDay = day;
       }
     }
+  },
+  closePop: function closePop() {
+    this.showPop = false;
+  },
+  enterkeyclick: function enterkeyclick(e) {
+    console.log(34 < e.value);
+    if (!(34 < e.value && e.value < 42)) {
+      this.showTemPo = true;
+    } else {
+      this.showTemPo = false;
+      this.tempValue = e.value;
+    }
+  },
+  closeTemPo: function closeTemPo() {
+    this.showTemPo = false;
+  },
+  chooseTime: function chooseTime(val) {
+    this.sexTime = (val.hour < 10 ? '0' + val.hour : val.hour) + ':' + val.minute;
   },
   routeDetail: function routeDetail() {
     _system2.default.push({
