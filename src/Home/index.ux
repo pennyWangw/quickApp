@@ -38,8 +38,25 @@
                     <text if="{{showTemPo}}" class="worn-text">请输入34.00 - 42.00的数字！</text>
                     <div class="row-inline">
                         <text>生活:</text>
-                        <input checked="{{sexLife}}" type="checkbox" onchange="enterkeyclick" maxlength="5">
-                        <picker type="time" value="{{sexTime}}" class="picker" onchange="chooseTime"></picker>
+                        <input checked="{{clickDay.sexLife}}" type="checkbox" onchange="changeSex" maxlength="5">
+                        <picker type="time" value="{{clickDay.sexTime}}" class="picker" onchange="chooseTime"></picker>
+                    </div>
+                    <div class="row-inline">
+                        <text>经期:</text>
+                        <input checked="{{clickDay.isPeriod}}" type="checkbox" onchange="changePeriod" maxlength="5">
+                    </div>
+                    <div class="margin-left-pop">
+                        <label>量少</label><input type="radio" value="量多" name="period" onchange="changeRadio">
+                        <label>普通</label><input type="radio" value="量正常" name="period" onchange="changeRadio">
+                        <label>量多</label><input type="radio" value="量少" name="period" onchange="changeRadio">
+                    </div>
+                    <div class="row-inline">
+                        <text class="title-area">备注:</text>
+                        <textarea class="text-are" onchange="getText"></textarea>
+                    </div>
+                    <div class="row-inline right-algn">
+                        <text class="btn" onclick="closePop">取消</text>
+                        <text class="btn certain" onclick="sureAdd">确定</text>
                     </div>
                 </div>
 
@@ -61,12 +78,15 @@
       choosedDays: [],
       showPop: true,
       clickDay: {
-        day: '2018-10-10'
+        day: '2018-10-10',
+        tempValue: null,
+        sexLife: false,
+        sexTime: '请选择时间',
+        isPeriod: false,
+        periodNum: '',
+        otherText: ''
       },
-      showTemPo: false,
-      tempValue: 34,
-      sexLife: false,
-      sexTime: '请选择时间'
+      showTemPo: false
     },
     onInit() {
       let date = new Date()
@@ -137,6 +157,9 @@
     getCurYear(event) {
       this.year = event
     },
+    sureAdd () {
+
+    },
     getCurDay(day) {
       this.showPop = true
       if (day.curMonth) {
@@ -158,14 +181,23 @@
         this.showTemPo = true
       } else {
         this.showTemPo = false
-        this.tempValue = e.value
+        this.clickDay.tempValue = e.value
       }
     },
-    closeTemPo () {
-      this.showTemPo = false
+    changeRadio (e) {
+      this.clickDay.periodNum = e.value
+    },
+    changeSex (e) {
+      this.clickDay.sexLife = e.value
+    },
+    changePeriod (e) {
+      this.clickDay.isPeriod = e.value
     },
     chooseTime (val) {
-      this.sexTime = (val.hour < 10 ? ('0' + val.hour) : val.hour) + ':' + val.minute
+      this.clickDay.sexTime = (val.hour < 10 ? ('0' + val.hour) : val.hour) + ':' + (val.minute < 10 ? ('0' + val.minute) : val.minute)
+    },
+    getText (e) {
+      this.clickDay.otherText = e.text
     },
     routeDetail() {
       // 跳转到应用内的某个页面，router用法详见：文档->接口->页面路由
@@ -255,20 +287,11 @@
 
     .center-pop {
         width: 70%;
-        height: 40%;
-        background-color: #efefef;
+        height: 70%;
+        background-color: #ffffff;
         border-radius: 10px;
         padding: 15px;
         flex-direction: column;
-    }
-    .tip-pop{
-        width: 60%;
-        align-items: center;
-        align-content: center;
-        justify-content: center;
-        height: 90px;
-        background-color: #efefef;
-        border-radius: 10px;
     }
     .worn-text{
         color: #EE6AA7;
@@ -303,13 +326,19 @@
         flex-direction: column;
     }
     .input-class{
-        border: 2px solid #EE6AA7;
+        border: 2px solid #FFC0CB;
         border-radius: 8px;
         font-size: 36px;
-        margin-left: 30px;
+        margin-left: 15px;
         padding: 6px 20px;
         color: #EE6AA7;
-        width: 70%;
+        width: 80%;
+    }
+    .margin-left-pop{
+        margin-left: 70px;
+        flex-direction: row;
+        align-self: flex-start;
+        margin-bottom: 20px;
     }
     .mask-class{
         mask-color: rgba(0,0,0,1)
@@ -327,5 +356,33 @@
         border-radius: 10px;
         color: #FFAEB9;
         padding: 0px 20px;
+    }
+    .text-are{
+        width: 80%;
+        border: 2px solid #FFC0CB;
+        border-radius: 8px;
+        margin-left: 15px;
+        padding: 6px 20px;
+        font-size: 28px;
+        height: 300px;
+        background-color: #FFFdFd;
+    }
+    .title-area{
+        align-self: flex-start;
+    }
+    .right-algn{
+        justify-content: flex-end;
+        align-self: flex-end;
+    }
+    .btn{
+        width: 120px;
+        text-align: center;
+        border: 2px solid #FFC0CB;
+        line-height: 45px;
+        border-radius: 20px;
+        margin: 20px;
+    }
+    .certain{
+        background-color: #FFAEB9;
     }
 </style>

@@ -335,31 +335,180 @@ module.exports = {
                     {
                       "type": "text",
                       "attr": {
-                        "value": "性生活:"
+                        "value": "生活:"
                       }
                     },
                     {
                       "type": "input",
                       "attr": {
-                        "checked": function () {return this.sexLife},
+                        "checked": function () {return this.clickDay.sexLife},
                         "type": "checkbox",
                         "maxlength": "5"
                       },
                       "events": {
-                        "change": "enterkeyclick"
+                        "change": "changeSex"
                       }
                     },
                     {
                       "type": "picker",
                       "attr": {
                         "type": "time",
-                        "value": function () {return this.sexTime}
+                        "value": function () {return this.clickDay.sexTime}
                       },
                       "classList": [
                         "picker"
                       ],
                       "events": {
                         "change": "chooseTime"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "attr": {},
+                  "classList": [
+                    "row-inline"
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "attr": {
+                        "value": "经期:"
+                      }
+                    },
+                    {
+                      "type": "input",
+                      "attr": {
+                        "checked": function () {return this.clickDay.isPeriod},
+                        "type": "checkbox",
+                        "maxlength": "5"
+                      },
+                      "events": {
+                        "change": "changePeriod"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "attr": {},
+                  "classList": [
+                    "margin-left-pop"
+                  ],
+                  "children": [
+                    {
+                      "type": "label",
+                      "attr": {
+                        "value": "量少"
+                      }
+                    },
+                    {
+                      "type": "input",
+                      "attr": {
+                        "type": "radio",
+                        "value": "量多",
+                        "name": "period"
+                      },
+                      "events": {
+                        "change": "changeRadio"
+                      }
+                    },
+                    {
+                      "type": "label",
+                      "attr": {
+                        "value": "普通"
+                      }
+                    },
+                    {
+                      "type": "input",
+                      "attr": {
+                        "type": "radio",
+                        "value": "量正常",
+                        "name": "period"
+                      },
+                      "events": {
+                        "change": "changeRadio"
+                      }
+                    },
+                    {
+                      "type": "label",
+                      "attr": {
+                        "value": "量多"
+                      }
+                    },
+                    {
+                      "type": "input",
+                      "attr": {
+                        "type": "radio",
+                        "value": "量少",
+                        "name": "period"
+                      },
+                      "events": {
+                        "change": "changeRadio"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "attr": {},
+                  "classList": [
+                    "row-inline"
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "attr": {
+                        "value": "备注:"
+                      },
+                      "classList": [
+                        "title-area"
+                      ]
+                    },
+                    {
+                      "type": "textarea",
+                      "attr": {},
+                      "classList": [
+                        "text-are"
+                      ],
+                      "events": {
+                        "change": "getText"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "attr": {},
+                  "classList": [
+                    "row-inline",
+                    "right-algn"
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "attr": {
+                        "value": "取消"
+                      },
+                      "classList": [
+                        "btn"
+                      ],
+                      "events": {
+                        "click": "closePop"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "attr": {
+                        "value": "确定"
+                      },
+                      "classList": [
+                        "btn",
+                        "certain"
+                      ],
+                      "events": {
+                        "click": "sureAdd"
                       }
                     }
                   ]
@@ -468,23 +617,14 @@ module.exports = {
   },
   ".center-pop": {
     "width": "70%",
-    "height": "40%",
-    "backgroundColor": "#efefef",
+    "height": "70%",
+    "backgroundColor": "#ffffff",
     "borderRadius": "10px",
     "paddingTop": "15px",
     "paddingRight": "15px",
     "paddingBottom": "15px",
     "paddingLeft": "15px",
     "flexDirection": "column"
-  },
-  ".tip-pop": {
-    "width": "60%",
-    "alignItems": "center",
-    "alignContent": "center",
-    "justifyContent": "center",
-    "height": "90px",
-    "backgroundColor": "#efefef",
-    "borderRadius": "10px"
   },
   ".worn-text": {
     "color": "#EE6AA7",
@@ -531,19 +671,25 @@ module.exports = {
     "borderBottomWidth": "2px",
     "borderLeftWidth": "2px",
     "borderStyle": "solid",
-    "borderTopColor": "#EE6AA7",
-    "borderRightColor": "#EE6AA7",
-    "borderBottomColor": "#EE6AA7",
-    "borderLeftColor": "#EE6AA7",
+    "borderTopColor": "#FFC0CB",
+    "borderRightColor": "#FFC0CB",
+    "borderBottomColor": "#FFC0CB",
+    "borderLeftColor": "#FFC0CB",
     "borderRadius": "8px",
     "fontSize": "36px",
-    "marginLeft": "30px",
+    "marginLeft": "15px",
     "paddingTop": "6px",
     "paddingRight": "20px",
     "paddingBottom": "6px",
     "paddingLeft": "20px",
     "color": "#EE6AA7",
-    "width": "70%"
+    "width": "80%"
+  },
+  ".margin-left-pop": {
+    "marginLeft": "70px",
+    "flexDirection": "row",
+    "alignSelf": "flex-start",
+    "marginBottom": "20px"
   },
   ".mask-class": {
     "maskColor": "rgba(0,0,0,1)"
@@ -562,6 +708,56 @@ module.exports = {
     "paddingRight": "20px",
     "paddingBottom": "0px",
     "paddingLeft": "20px"
+  },
+  ".text-are": {
+    "width": "80%",
+    "borderTopWidth": "2px",
+    "borderRightWidth": "2px",
+    "borderBottomWidth": "2px",
+    "borderLeftWidth": "2px",
+    "borderStyle": "solid",
+    "borderTopColor": "#FFC0CB",
+    "borderRightColor": "#FFC0CB",
+    "borderBottomColor": "#FFC0CB",
+    "borderLeftColor": "#FFC0CB",
+    "borderRadius": "8px",
+    "marginLeft": "15px",
+    "paddingTop": "6px",
+    "paddingRight": "20px",
+    "paddingBottom": "6px",
+    "paddingLeft": "20px",
+    "fontSize": "28px",
+    "height": "300px",
+    "backgroundColor": "#FFFdFd"
+  },
+  ".title-area": {
+    "alignSelf": "flex-start"
+  },
+  ".right-algn": {
+    "justifyContent": "flex-end",
+    "alignSelf": "flex-end"
+  },
+  ".btn": {
+    "width": "120px",
+    "textAlign": "center",
+    "borderTopWidth": "2px",
+    "borderRightWidth": "2px",
+    "borderBottomWidth": "2px",
+    "borderLeftWidth": "2px",
+    "borderStyle": "solid",
+    "borderTopColor": "#FFC0CB",
+    "borderRightColor": "#FFC0CB",
+    "borderBottomColor": "#FFC0CB",
+    "borderLeftColor": "#FFC0CB",
+    "lineHeight": "45px",
+    "borderRadius": "20px",
+    "marginTop": "20px",
+    "marginRight": "20px",
+    "marginBottom": "20px",
+    "marginLeft": "20px"
+  },
+  ".certain": {
+    "backgroundColor": "#FFAEB9"
   }
 }
 
@@ -592,12 +788,15 @@ exports.default = {
     choosedDays: [],
     showPop: true,
     clickDay: {
-      day: '2018-10-10'
+      day: '2018-10-10',
+      tempValue: null,
+      sexLife: false,
+      sexTime: '请选择时间',
+      isPeriod: false,
+      periodNum: '',
+      otherText: ''
     },
-    showTemPo: false,
-    tempValue: 34,
-    sexLife: false,
-    sexTime: '请选择时间'
+    showTemPo: false
   },
   onInit: function onInit() {
     var date = new Date();
@@ -668,6 +867,7 @@ exports.default = {
   getCurYear: function getCurYear(event) {
     this.year = event;
   },
+  sureAdd: function sureAdd() {},
   getCurDay: function getCurDay(day) {
     this.showPop = true;
     if (day.curMonth) {
@@ -689,14 +889,23 @@ exports.default = {
       this.showTemPo = true;
     } else {
       this.showTemPo = false;
-      this.tempValue = e.value;
+      this.clickDay.tempValue = e.value;
     }
   },
-  closeTemPo: function closeTemPo() {
-    this.showTemPo = false;
+  changeRadio: function changeRadio(e) {
+    this.clickDay.periodNum = e.value;
+  },
+  changeSex: function changeSex(e) {
+    this.clickDay.sexLife = e.value;
+  },
+  changePeriod: function changePeriod(e) {
+    this.clickDay.isPeriod = e.value;
   },
   chooseTime: function chooseTime(val) {
-    this.sexTime = (val.hour < 10 ? '0' + val.hour : val.hour) + ':' + val.minute;
+    this.clickDay.sexTime = (val.hour < 10 ? '0' + val.hour : val.hour) + ':' + (val.minute < 10 ? '0' + val.minute : val.minute);
+  },
+  getText: function getText(e) {
+    this.clickDay.otherText = e.text;
   },
   routeDetail: function routeDetail() {
     _system2.default.push({
