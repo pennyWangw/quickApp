@@ -118,6 +118,24 @@ module.exports = {
       ]
     },
     {
+      "type": "div",
+      "attr": {},
+      "classList": [
+        "date-check"
+      ],
+      "events": {
+        "click": "routeDetail"
+      },
+      "children": [
+        {
+          "type": "text",
+          "attr": {
+            "value": "查看基础体温"
+          }
+        }
+      ]
+    },
+    {
       "type": "list",
       "attr": {
         "id": "alist"
@@ -203,11 +221,12 @@ module.exports = {
                   "attr": {},
                   "repeat": {
                     "exp": function () {return this.month.day},
+                    "key": "index",
                     "value": "day"
                   },
-                  "classList": function () {return ['item-text', (this.choosedDays.indexOf(this.day)>-1&&this.day.curMonth)?'choosename':'']},
+                  "classList": function () {return ['item-text', (this.haveChooseDay(this.day.day)&&this.day.curMonth)?'choosename':'']},
                   "events": {
-                    "click": function (evt) {this.getCurDay(this.day,evt)},
+                    "click": function (evt) {this.getCurDay(this.day,this.index,evt)},
                     "longpress": function (evt) {this.showRecord(this.day,evt)}
                   },
                   "children": [
@@ -303,7 +322,7 @@ module.exports = {
                     {
                       "type": "input",
                       "attr": {
-                        "value": "",
+                        "value": function () {return this.clickDay.tempValue},
                         "maxlength": "5"
                       },
                       "events": {
@@ -398,18 +417,36 @@ module.exports = {
                   ],
                   "children": [
                     {
+                      "type": "input",
+                      "attr": {
+                        "id": "radio1",
+                        "type": "radio",
+                        "value": "量多",
+                        "name": "period",
+                        "checked": function () {return this.clickDay.periodNum==='量多'}
+                      },
+                      "id": "radio1",
+                      "events": {
+                        "change": "changeRadio"
+                      }
+                    },
+                    {
                       "type": "label",
                       "attr": {
+                        "target": "radio1",
                         "value": "量少"
                       }
                     },
                     {
                       "type": "input",
                       "attr": {
+                        "id": "radio2",
                         "type": "radio",
-                        "value": "量多",
-                        "name": "period"
+                        "value": "量正常",
+                        "name": "period",
+                        "checked": function () {return this.clickDay.periodNum==='量正常'}
                       },
+                      "id": "radio2",
                       "events": {
                         "change": "changeRadio"
                       }
@@ -417,16 +454,20 @@ module.exports = {
                     {
                       "type": "label",
                       "attr": {
+                        "target": "radio2",
                         "value": "普通"
                       }
                     },
                     {
                       "type": "input",
                       "attr": {
+                        "id": "radio3",
                         "type": "radio",
-                        "value": "量正常",
-                        "name": "period"
+                        "value": "量少",
+                        "name": "period",
+                        "checked": function () {return this.clickDay.periodNum==='量少'}
                       },
+                      "id": "radio3",
                       "events": {
                         "change": "changeRadio"
                       }
@@ -434,18 +475,8 @@ module.exports = {
                     {
                       "type": "label",
                       "attr": {
+                        "target": "radio3",
                         "value": "量多"
-                      }
-                    },
-                    {
-                      "type": "input",
-                      "attr": {
-                        "type": "radio",
-                        "value": "量少",
-                        "name": "period"
-                      },
-                      "events": {
-                        "change": "changeRadio"
                       }
                     }
                   ]
@@ -468,7 +499,9 @@ module.exports = {
                     },
                     {
                       "type": "textarea",
-                      "attr": {},
+                      "attr": {
+                        "value": function () {return this.clickDay.otherText}
+                      },
                       "classList": [
                         "text-are"
                       ],
@@ -702,6 +735,7 @@ module.exports = {
     "marginTop": "20px"
   },
   ".picker": {
+    "width": "200px",
     "borderRadius": "10px",
     "color": "#FFAEB9",
     "paddingTop": "0px",
@@ -758,6 +792,25 @@ module.exports = {
   },
   ".certain": {
     "backgroundColor": "#FFAEB9"
+  },
+  ".date-check": {
+    "position": "fixed",
+    "width": "200px",
+    "height": "70px",
+    "right": "30px",
+    "top": "15px",
+    "display": "flex",
+    "justifyContent": "center",
+    "borderTopWidth": "1px",
+    "borderRightWidth": "1px",
+    "borderBottomWidth": "1px",
+    "borderLeftWidth": "1px",
+    "borderStyle": "solid",
+    "borderTopColor": "#EE6AA7",
+    "borderRightColor": "#EE6AA7",
+    "borderBottomColor": "#EE6AA7",
+    "borderLeftColor": "#EE6AA7",
+    "borderRadius": "8px"
   }
 }
 
@@ -786,9 +839,9 @@ exports.default = {
     year: new Date(),
     allDays: [],
     choosedDays: [],
-    showPop: true,
+    showPop: false,
     clickDay: {
-      day: '2018-10-10',
+      day: '',
       tempValue: null,
       sexLife: false,
       sexTime: '请选择时间',
@@ -796,7 +849,8 @@ exports.default = {
       periodNum: '',
       otherText: ''
     },
-    showTemPo: false
+    showTemPo: false,
+    dayIndex: -1
   },
   onInit: function onInit() {
     var date = new Date();
@@ -841,7 +895,7 @@ exports.default = {
       });
     }
     var lastDay = date.getDay();
-    console.log(lastDay + 'day' + this.dateFormat(date));
+
     if (lastDay !== 0) {
       for (var k = 1; k < 7 - lastDay + 1; k++) {
         var day3 = new Date(date);
@@ -867,21 +921,56 @@ exports.default = {
   getCurYear: function getCurYear(event) {
     this.year = event;
   },
-  sureAdd: function sureAdd() {},
-  getCurDay: function getCurDay(day) {
-    this.showPop = true;
-    if (day.curMonth) {
-      var index = this.choosedDays.indexOf(day);
-      if (index > -1) {
-        this.choosedDays.splice(index, 1);
-      } else {
-        this.choosedDays.push(day);
-        this.clickDay = day;
+  sureAdd: function sureAdd() {
+    var haveDay = false;
+    for (var i = 0; i < this.choosedDays.length; i++) {
+      var curChooseDay = this.choosedDays[i];
+      if (curChooseDay.day === this.clickDay.day) {
+        this.choosedDays[i] = this.clickDay;
+        haveDay = true;
+        break;
       }
+    }
+    if (!haveDay) {
+      this.choosedDays.push(this.clickDay);
+    }
+
+    console.log(this.allDays[this.dayIndex]);
+
+    console.log(this.choosedDays);
+    this.closePop();
+  },
+  getCurDay: function getCurDay(day, index) {
+    this.dayIndex = index;
+    if (day.curMonth) {
+      for (var i = 0; i < this.choosedDays.length; i++) {
+        var curChooseDay = this.choosedDays[i];
+        if (curChooseDay.day === day.day) {
+          this.clickDay = curChooseDay;
+          break;
+        }
+      }
+      if (!this.clickDay.day) {
+        this.clickDay.day = day.day;
+        this.clickDay.curMonth = day.curMonth;
+      }
+      console.log(this.clickDay);
+
+      this.showPop = true;
     }
   },
   closePop: function closePop() {
     this.showPop = false;
+    this.clickDay = {
+      day: '',
+      tempValue: null,
+      sexLife: false,
+      sexTime: '请选择时间',
+      isPeriod: false,
+      periodNum: '',
+      otherText: ''
+    };
+    this.dayIndex = -1;
   },
   enterkeyclick: function enterkeyclick(e) {
     console.log(34 < e.value);
@@ -894,18 +983,25 @@ exports.default = {
   },
   changeRadio: function changeRadio(e) {
     this.clickDay.periodNum = e.value;
+    console.log(e);
   },
   changeSex: function changeSex(e) {
-    this.clickDay.sexLife = e.value;
+    this.clickDay.sexLife = e.checked;
   },
   changePeriod: function changePeriod(e) {
-    this.clickDay.isPeriod = e.value;
+    console.log(e);
+    this.clickDay.isPeriod = e.checked;
   },
   chooseTime: function chooseTime(val) {
     this.clickDay.sexTime = (val.hour < 10 ? '0' + val.hour : val.hour) + ':' + (val.minute < 10 ? '0' + val.minute : val.minute);
   },
   getText: function getText(e) {
     this.clickDay.otherText = e.text;
+  },
+  haveChooseDay: function haveChooseDay(day) {
+    return this.choosedDays.some(function (item) {
+      return item.day === day;
+    });
   },
   routeDetail: function routeDetail() {
     _system2.default.push({
