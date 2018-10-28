@@ -1,7 +1,14 @@
 <template>
   <!-- template里只能有一个根节点 -->
   <div class="demo-page">
-    <text class="title">{{text}}</text>
+    <div class="top-title">
+      <picker type="date" value="{{startDay}}" class="picker" onchange="chooseTime"></picker>
+      <text class="margin-left-xx">—</text>
+      <picker class="margin-left-xx" type="date" value="{{endDay}}" class="picker" onchange="chooseEndTime"></picker>
+    </div>
+    <div class="content-page">
+      <text>{{dataContent}}</text>
+    </div>
   </div>
 </template>
 
@@ -12,23 +19,50 @@
     align-items: center;
   }
 
-  .title {
+  .top-title {
+    position: fixed;
+    left: 0;
+    top: 0;
     font-size: 40px;
     text-align: center;
+    line-height: 100px;
+    height: 100px;
+    background: linear-gradient(#FFAEB9, #ffffff);
+    color: #2E2E2E;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+  }
+  .margin-left-xx{
+    margin-left: 80vw;
+  }
+  .content-page {
+    margin-top: 100px;
+    width: 100%;
+    padding: 0 15px;
+    height: 100%;
   }
 </style>
 
 <script>
+  import data from './data.js'
   export default {
     private: {
-      text: '欢迎打开详情页'
+      startDay: '2018-09-28',
+      endDay: '2018-10-28',
+      dataContent: []
     },
-    /**
-     * 当用户点击菜单按钮时触发，调用app中定义的方法showMenu
-     * 注意：使用加载器测试`创建桌面快捷方式`功能时，请先在`系统设置`中打开`应用加载器`的`桌面快捷方式`权限
-     */
+    chooseTime (val) {
+      this.startDay = (val.year + '-' + (val.month < 10 ? ('0' + val.month) : val.month) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
+    },
+    chooseEndTime (val) {
+      this.endDay = (val.year + '-' + (val.month < 10 ? ('0' + val.month) : val.month) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
+    },
     onMenuPress() {
       this.$app.$def.showMenu()
+    },
+    onInit() {
+      this.dataContent = data
     }
   }
 </script>

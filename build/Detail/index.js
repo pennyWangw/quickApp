@@ -105,12 +105,62 @@ module.exports = {
   ],
   "children": [
     {
-      "type": "text",
-      "attr": {
-        "value": function () {return this.text}
-      },
+      "type": "div",
+      "attr": {},
       "classList": [
-        "title"
+        "top-title"
+      ],
+      "children": [
+        {
+          "type": "picker",
+          "attr": {
+            "type": "date",
+            "value": function () {return this.startDay}
+          },
+          "classList": [
+            "picker"
+          ],
+          "events": {
+            "change": "chooseTime"
+          }
+        },
+        {
+          "type": "text",
+          "attr": {
+            "value": "—"
+          },
+          "classList": [
+            "margin-left-xx"
+          ]
+        },
+        {
+          "type": "picker",
+          "attr": {
+            "type": "date",
+            "value": function () {return this.endDay}
+          },
+          "classList": [
+            "margin-left-xx"
+          ],
+          "events": {
+            "change": "chooseEndTime"
+          }
+        }
+      ]
+    },
+    {
+      "type": "div",
+      "attr": {},
+      "classList": [
+        "content-page"
+      ],
+      "children": [
+        {
+          "type": "text",
+          "attr": {
+            "value": function () {return this.dataContent}
+          }
+        }
       ]
     }
   ]
@@ -126,15 +176,37 @@ module.exports = {
     "justifyContent": "center",
     "alignItems": "center"
   },
-  ".title": {
+  ".top-title": {
+    "position": "fixed",
+    "left": "0px",
+    "top": "0px",
     "fontSize": "40px",
-    "textAlign": "center"
+    "textAlign": "center",
+    "lineHeight": "100px",
+    "height": "100px",
+    "background": "{\"values\":[{\"type\":\"linearGradient\",\"directions\":[\"to\",\"bottom\"],\"values\":[\"#FFAEB9\",\"#ffffff\"]}]}",
+    "color": "#2E2E2E",
+    "width": "100%",
+    "flexDirection": "row",
+    "justifyContent": "center"
+  },
+  ".margin-left-xx": {
+    "marginLeft": "80px"
+  },
+  ".content-page": {
+    "marginTop": "100px",
+    "width": "100%",
+    "paddingTop": "0px",
+    "paddingRight": "15px",
+    "paddingBottom": "0px",
+    "paddingLeft": "15px",
+    "height": "100%"
   }
 }
 
 /***/ }),
 /* 10 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = function(module, exports, $app_require$){'use strict';
 
@@ -144,12 +216,29 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var _data = __webpack_require__(15);
+
+var _data2 = _interopRequireDefault(_data);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 exports.default = {
   private: {
-    text: '欢迎打开详情页'
+    startDay: '2018-09-28',
+    endDay: '2018-10-28',
+    dataContent: []
+  },
+  chooseTime: function chooseTime(val) {
+    this.startDay = val.year + '-' + (val.month < 10 ? '0' + val.month : val.month) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+  },
+  chooseEndTime: function chooseEndTime(val) {
+    this.endDay = val.year + '-' + (val.month < 10 ? '0' + val.month : val.month) + '-' + (val.day < 10 ? '0' + val.day : val.day);
   },
   onMenuPress: function onMenuPress() {
     this.$app.$def.showMenu();
+  },
+  onInit: function onInit() {
+    this.dataContent = _data2.default;
   }
 };
 
@@ -176,6 +265,110 @@ if (moduleOwn.data && accessors.some(function (acc) {
     }
   });
 }}
+
+/***/ }),
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = [{
+  day: '2018-09-01',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-02',
+  tempValue: 36.8,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-03',
+  tempValue: 36.7,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-04',
+  tempValue: 36.2,
+  sexLife: true,
+  sexTime: '21:00',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-05',
+  tempValue: 36.9,
+  sexLife: true,
+  sexTime: '23:00',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-06',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量少',
+  otherText: '腹痛'
+}, {
+  day: '2018-09-07',
+  tempValue: 36.7,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量少',
+  otherText: ''
+}, {
+  day: '2018-09-08',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: ''
+}, {
+  day: '2018-09-09',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhs'
+}, {
+  day: '2018-09-10',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+}, {
+  day: '2018-09-11',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+}];
 
 /***/ })
 /******/ ]);
