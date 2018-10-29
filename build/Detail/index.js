@@ -1,7 +1,526 @@
 (function(){
   
   var createPageHandler = function() {
-    return !function(e){function t(i){if(o[i])return o[i].exports;var a=o[i]={i:i,l:!1,exports:{}};return e[i].call(a.exports,a,a.exports,t),a.l=!0,a.exports}var o={};t.m=e,t.c=o,t.d=function(e,o,i){t.o(e,o)||Object.defineProperty(e,o,{configurable:!1,enumerable:!0,get:i})},t.n=function(e){var o=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(o,"a",o),o},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p="",t(t.s=7)}([,,,,,,,function(e,t,o){var i=o(8),a=o(9),n=o(10);$app_define$("@app-component/index",[],function(e,t,o){n(o,t,e),t.__esModule&&t.default&&(o.exports=t.default),o.exports.template=i,o.exports.style=a}),$app_bootstrap$("@app-component/index",{packagerVersion:"0.0.5"})},function(e,t){e.exports={type:"div",attr:{},classList:["demo-page"],children:[{type:"div",attr:{},classList:["top-title"],children:[{type:"picker",attr:{type:"date",value:function(){return this.startDay}},classList:["picker"],events:{change:"chooseTime"}},{type:"text",attr:{value:">"},classList:["arrow"]},{type:"text",attr:{value:"—"},classList:["margin-left-xx"]},{type:"picker",attr:{type:"date",value:function(){return this.endDay}},classList:["margin-left-xx"],events:{change:"chooseEndTime"}},{type:"text",attr:{value:">"},classList:["arrow"]}]},{type:"div",attr:{},classList:["content-page"],children:[{type:"canvas",attr:{id:"newCanvas"},classList:["new_canvas"],id:"newCanvas"}]}]}},function(e,t){e.exports={".demo-page":{flexDirection:"column",justifyContent:"center",alignItems:"center"},".top-title":{position:"fixed",left:"0px",top:"0px",fontSize:"40px",textAlign:"center",lineHeight:"100px",height:"100px",background:'{"values":[{"type":"linearGradient","directions":["to","bottom"],"values":["#FFAEB9","#ffffff"]}]}',color:"#2E2E2E",width:"100%",flexDirection:"row",justifyContent:"center"},".margin-left-xx":{marginLeft:"80px"},".content-page":{marginTop:"100px",width:"100%",paddingTop:"0px",paddingRight:"15px",paddingBottom:"0px",paddingLeft:"15px",height:"100%",flexDirection:"column"},".new_canvas":{width:"100%",height:"90%"},".arrow":{transform:'{"rotate":"90deg"}',color:"#8B1A1A",marginLeft:"5px",marginTop:"5px",fontSize:"35px"}}},function(e,t,o){e.exports=function(e,t,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var a="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},n=o(11),r=function(e){return e&&e.__esModule?e:{default:e}}(n);t.default={private:{startDay:"2018-09-28",endDay:"2018-10-28",dataContent:[],drawComplete:!1},chooseTime:function(e){this.startDay=e.year+"-"+(e.month<10?"0"+e.month:e.month)+"-"+(e.day<10?"0"+e.day:e.day)},chooseEndTime:function(e){this.endDay=e.year+"-"+(e.month<10?"0"+e.month:e.month)+"-"+(e.day<10?"0"+e.day:e.day)},onShow:function(){this.drawComplete||this.drawCanvas()},drawCanvas:function(){var e=this.$element("newCanvas"),t=e.getContext("2d");t.beginPath();t.lineJoin="miter",t.moveTo(50,100),t.lineTo(50,620),t.moveTo(50,620),t.lineTo(720,620),t.closePath(),t.stroke(),t.font="21px",t.textAlign="left",t.textBaseline="bottom",t.fillStyle="#3D3D3D",t.fillText("年:",0,30),t.fillText("月:",0,68),t.fillText("日:",0,97);var o=this.dataContent[0].day.split("-");t.fillText(o[0],54,35),t.fillText(o[1],54,65);t.beginPath();for(var i=0;i<13;i++){var a=parseFloat(36+.1*i).toFixed(1),n=620-40*i;t.fillText(a,0,n),0!==i&&(t.moveTo(51,n),t.lineTo(720,n))}t.strokeStyle="#eaeaea",t.stroke(),t.closePath();var r=670/32;t.beginPath();for(var s=0;s<31;s++){var l=50+r*s+r;t.moveTo(l,100),t.lineTo(l,619)}t.strokeStyle="#eaeaea",t.stroke(),t.closePath();for(var p=void 0,d=void 0,f=0;f<this.dataContent.length;f++){t.fillStyle="#3D3D3D";var x=this.dataContent[f],c=620-(x.tempValue-36)/.1*40,u=50+r*f+.5*r;t.beginPath(),p?t.moveTo(p,d):t.moveTo(u,c),t.lineTo(u,c),t.strokeStyle="#8B5742",t.stroke(),t.closePath(),t.arc(u,c,4,0,360,!0),t.fill(),x.sexLife&&t.arc(u,c,8,0,370,!0),t.stroke();var m=x.day.split("-");t.font="12px",0!==f?t.fillText(m[2],u-6,95):t.fillText(m[2],u-6,91),"01"===m[2]&&(t.font="21px",t.fillText(m[1],u-12,65),"01"===m[1]&&t.fillText(m[0],u-12,35)),t.font="12px";for(var h=0;h<x.otherText.length;h++){var y=x.otherText[h];t.fillText(y,u-6,640+12*h)}if(t.font="20px",t.fillStyle="#8B2500",x.isPeriod){"量少"===x.periodNum?(t.font="30px",t.fillText("、",u-6,130)):"量多"===x.periodNum?(t.fillText("x",u-6,123),t.fillText("x",u-6,137)):t.fillText("x",u-6,130)}p=u,d=c}this.drawComplete=!0},onMenuPress:function(){this.$app.$def.showMenu()},onInit:function(){this.dataContent=r.default}};var s=t.default||e.exports,l=["public","protected","private"];if(s.data&&l.some(function(e){return s[e]}))throw new Error('页面VM对象中的属性data不可与"'+l.join(",")+'"同时存在，请使用private替换data名称');s.data||(s.data={},s._descriptor={},l.forEach(function(e){var t=a(s[e]);if("object"===t){s.data=Object.assign(s.data,s[e]);for(var o in s[e])s._descriptor[o]={access:e}}else"function"===t&&console.warn("页面VM对象中的属性"+e+"的值不能是函数，请使用对象")}))}},function(e,t,o){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=[{day:"2018-09-28",tempValue:36.1,sexLife:!1,sexTime:"请选择时间",isPeriod:!1,periodNum:"",otherText:""},{day:"2018-09-29",tempValue:36.5,sexLife:!1,sexTime:"请选择时间",isPeriod:!1,periodNum:"",otherText:""},{day:"2018-09-30",tempValue:36.6,sexLife:!0,sexTime:"06:00",isPeriod:!1,periodNum:"",otherText:""},{day:"2018-10-01",tempValue:36.6,sexLife:!0,sexTime:"21:00",isPeriod:!1,periodNum:"",otherText:"52453754"},{day:"2018-10-02",tempValue:36.8,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量少",otherText:"腹痛"},{day:"2018-10-03",tempValue:36.9,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量正常",otherText:"腹痛"},{day:"2018-10-04",tempValue:36.2,sexLife:!0,sexTime:"请选择时间",isPeriod:!0,periodNum:"量正常",otherText:"腹痛"},{day:"2018-10-05",tempValue:36.3,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量多",otherText:"腹痛"},{day:"2018-10-06",tempValue:36.5,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量正常",otherText:"腹痛"},{day:"2018-10-07",tempValue:36.2,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量少",otherText:"腹痛"}]}]);
+    return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */,
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $app_template$ = __webpack_require__(8)
+var $app_style$ = __webpack_require__(9)
+var $app_script$ = __webpack_require__(10)
+
+$app_define$('@app-component/index', [], function($app_require$, $app_exports$, $app_module$){
+     $app_script$($app_module$, $app_exports$, $app_require$)
+     if ($app_exports$.__esModule && $app_exports$.default) {
+            $app_module$.exports = $app_exports$.default
+        }
+     $app_module$.exports.template = $app_template$
+     $app_module$.exports.style = $app_style$
+})
+
+$app_bootstrap$('@app-component/index',{ packagerVersion: '0.0.5'})
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  "type": "div",
+  "attr": {},
+  "classList": [
+    "demo-page"
+  ],
+  "children": [
+    {
+      "type": "div",
+      "attr": {},
+      "classList": [
+        "top-title"
+      ],
+      "children": [
+        {
+          "type": "picker",
+          "attr": {
+            "type": "date",
+            "value": function () {return this.startDay}
+          },
+          "classList": [
+            "picker"
+          ],
+          "events": {
+            "change": "chooseTime"
+          }
+        },
+        {
+          "type": "text",
+          "attr": {
+            "value": ">"
+          },
+          "classList": [
+            "arrow"
+          ]
+        },
+        {
+          "type": "text",
+          "attr": {
+            "value": "—"
+          },
+          "classList": [
+            "margin-left-xx"
+          ]
+        },
+        {
+          "type": "picker",
+          "attr": {
+            "type": "date",
+            "value": function () {return this.endDay}
+          },
+          "classList": [
+            "margin-left-xx"
+          ],
+          "events": {
+            "change": "chooseEndTime"
+          }
+        },
+        {
+          "type": "text",
+          "attr": {
+            "value": ">"
+          },
+          "classList": [
+            "arrow"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "div",
+      "attr": {},
+      "classList": [
+        "content-page"
+      ],
+      "children": [
+        {
+          "type": "canvas",
+          "attr": {
+            "id": "newCanvas"
+          },
+          "classList": [
+            "new_canvas"
+          ],
+          "id": "newCanvas"
+        }
+      ]
+    }
+  ]
+}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  ".demo-page": {
+    "flexDirection": "column",
+    "justifyContent": "center",
+    "alignItems": "center"
+  },
+  ".top-title": {
+    "position": "fixed",
+    "left": "0px",
+    "top": "0px",
+    "fontSize": "40px",
+    "textAlign": "center",
+    "lineHeight": "100px",
+    "height": "100px",
+    "background": "{\"values\":[{\"type\":\"linearGradient\",\"directions\":[\"to\",\"bottom\"],\"values\":[\"#FFAEB9\",\"#ffffff\"]}]}",
+    "color": "#2E2E2E",
+    "width": "100%",
+    "flexDirection": "row",
+    "justifyContent": "center"
+  },
+  ".margin-left-xx": {
+    "marginLeft": "80px"
+  },
+  ".content-page": {
+    "marginTop": "100px",
+    "width": "100%",
+    "paddingTop": "0px",
+    "paddingRight": "15px",
+    "paddingBottom": "0px",
+    "paddingLeft": "15px",
+    "height": "100%",
+    "flexDirection": "column"
+  },
+  ".new_canvas": {
+    "width": "100%",
+    "height": "90%"
+  },
+  ".arrow": {
+    "transform": "{\"rotate\":\"90deg\"}",
+    "color": "#8B1A1A",
+    "marginLeft": "5px",
+    "marginTop": "5px",
+    "fontSize": "35px"
+  }
+}
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = function(module, exports, $app_require$){'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _data2 = __webpack_require__(11);
+
+var _data3 = _interopRequireDefault(_data2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+  private: {
+    startDay: '2018-09-28',
+    endDay: '2018-10-28',
+    dataContent: [],
+    drawComplete: false
+  },
+  chooseTime: function chooseTime(val) {
+    this.startDay = val.year + '-' + (val.month < 10 ? '0' + val.month : val.month) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+  },
+  chooseEndTime: function chooseEndTime(val) {
+    this.endDay = val.year + '-' + (val.month < 10 ? '0' + val.month : val.month) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+  },
+  onShow: function onShow() {
+    if (!this.drawComplete) {
+      this.drawCanvas();
+    }
+  },
+  drawCanvas: function drawCanvas() {
+    var canvas = this.$element('newCanvas');
+    var ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    var initX = 50;
+    var initY = 100;
+    var endX = 720;
+    var endY = 620;
+
+    ctx.lineJoin = 'miter';
+    ctx.moveTo(initX, initY);
+    ctx.lineTo(initX, endY);
+    ctx.moveTo(initX, endY);
+    ctx.lineTo(endX, endY);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.font = '21px';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#3D3D3D';
+    ctx.fillText("年:", 0, 30);
+    ctx.fillText("月:", 0, 68);
+    ctx.fillText("日:", 0, 97);
+    var initDay = this.dataContent[0].day.split('-');
+    ctx.fillText(initDay[0], 54, 35);
+    ctx.fillText(initDay[1], 54, 65);
+
+    var n = (endY - initY) / 13;
+    ctx.beginPath();
+    for (var i = 0; i < 13; i++) {
+      var text = parseFloat(36.0 + 0.1 * i).toFixed(1);
+      var y = endY - n * i;
+      ctx.fillText(text, 0, y);
+      if (i !== 0) {
+        ctx.moveTo(initX + 1, y);
+        ctx.lineTo(endX, y);
+      }
+    }
+    ctx.strokeStyle = '#eaeaea';
+    ctx.stroke();
+    ctx.closePath();
+
+    var xN = (endX - initX) / 32;
+    ctx.beginPath();
+    for (var _i = 0; _i < 31; _i++) {
+      var x = initX + xN * _i + xN;
+      ctx.moveTo(x, initY);
+      ctx.lineTo(x, endY - 1);
+    }
+    ctx.strokeStyle = '#eaeaea';
+    ctx.stroke();
+    ctx.closePath();
+
+    var lastX = void 0;
+    var lastY = void 0;
+    for (var _i2 = 0; _i2 < this.dataContent.length; _i2++) {
+      ctx.fillStyle = '#3D3D3D';
+      var _data = this.dataContent[_i2];
+      var _y = endY - (_data.tempValue - 36) / 0.1 * n;
+      var _x = initX + xN * _i2 + 1 / 2 * xN;
+
+      ctx.beginPath();
+      if (lastX) {
+        ctx.moveTo(lastX, lastY);
+      } else {
+        ctx.moveTo(_x, _y);
+      }
+      ctx.lineTo(_x, _y);
+      ctx.strokeStyle = '#8B5742';
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.arc(_x, _y, 4, 0, 360, true);
+      ctx.fill();
+      if (_data.sexLife) {
+        ctx.arc(_x, _y, 8, 0, 370, true);
+      }
+      ctx.stroke();
+
+      var day = _data.day.split('-');
+      ctx.font = '12px';
+      if (_i2 !== 0) {
+        ctx.fillText(day[2], _x - 6, 95);
+      } else {
+        ctx.fillText(day[2], _x - 6, 91);
+      }
+      if (day[2] === '01') {
+        ctx.font = '21px';
+        ctx.fillText(day[1], _x - 12, 65);
+        if (day[1] === '01') {
+          ctx.fillText(day[0], _x - 12, 35);
+        }
+      }
+
+      ctx.font = '12px';
+      for (var j = 0; j < _data.otherText.length; j++) {
+        var char = _data.otherText[j];
+        ctx.fillText(char, _x - 6, endY + 20 + j * 12);
+      }
+
+      ctx.font = '20px';
+      ctx.fillStyle = '#8B2500';
+      if (_data.isPeriod) {
+        var pY = initY + n / 2 + 10;
+        if (_data.periodNum === '量少') {
+          ctx.font = '30px';
+          ctx.fillText('、', _x - 6, pY);
+        } else if (_data.periodNum === '量多') {
+          ctx.fillText('x', _x - 6, pY - 7);
+          ctx.fillText('x', _x - 6, pY + 7);
+        } else {
+          ctx.fillText('x', _x - 6, pY);
+        }
+      }
+      lastX = _x;
+      lastY = _y;
+    }
+
+    this.drawComplete = true;
+  },
+  onMenuPress: function onMenuPress() {
+    this.$app.$def.showMenu();
+  },
+  onInit: function onInit() {
+    this.dataContent = _data3.default;
+  }
+};
+
+
+var moduleOwn = exports.default || module.exports;
+var accessors = ['public', 'protected', 'private'];
+
+if (moduleOwn.data && accessors.some(function (acc) {
+  return moduleOwn[acc];
+})) {
+  throw new Error('页面VM对象中的属性data不可与"' + accessors.join(',') + '"同时存在，请使用private替换data名称');
+} else if (!moduleOwn.data) {
+  moduleOwn.data = {};
+  moduleOwn._descriptor = {};
+  accessors.forEach(function (acc) {
+    var accType = _typeof(moduleOwn[acc]);
+    if (accType === 'object') {
+      moduleOwn.data = Object.assign(moduleOwn.data, moduleOwn[acc]);
+      for (var name in moduleOwn[acc]) {
+        moduleOwn._descriptor[name] = { access: acc };
+      }
+    } else if (accType === 'function') {
+      console.warn('页面VM对象中的属性' + acc + '的值不能是函数，请使用对象');
+    }
+  });
+}}
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = [{
+  day: '2018-09-28',
+  tempValue: 36.1,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-29',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-30',
+  tempValue: 36.6,
+  sexLife: true,
+  sexTime: '06:00',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-10-01',
+  tempValue: 36.6,
+  sexLife: true,
+  sexTime: '21:00',
+  isPeriod: false,
+  periodNum: '',
+  otherText: '52453754'
+}, {
+  day: '2018-10-02',
+  tempValue: 36.8,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量少',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-03',
+  tempValue: 36.9,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-04',
+  tempValue: 36.2,
+  sexLife: true,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-05',
+  tempValue: 36.3,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量多',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-06',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-07',
+  tempValue: 36.2,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量少',
+  otherText: '腹痛'
+}];
+
+/***/ })
+/******/ ]);
   };
   if (typeof window === "undefined") {
     return createPageHandler();
@@ -10,3 +529,4 @@
     window.createPageHandler = createPageHandler
   }
 })();
+//# sourceMappingURL=index.js.map

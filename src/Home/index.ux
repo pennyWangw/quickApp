@@ -68,6 +68,7 @@
 
 <script>
   import router from '@system.router'
+  import storage from '@system.storage'
 
   export default {
     // 页面级组件的数据模型，影响传入数据的覆盖机制：private内定义的属性不允许被覆盖
@@ -91,6 +92,7 @@
       dayIndex: -1
     },
     onInit() {
+      this.getChooseDayStor()
       let date = new Date()
       let curDate = `${date.getFullYear()}-${date.getMonth() + 1}-01`
       this.getMounth(curDate)
@@ -104,6 +106,29 @@
     },
     showRecord(day) {
 
+    },
+    getChooseDayStor() {
+      storage.get({
+        key: 'penny.chooseDay',
+        success: (data) => {
+          this.choosedDays = data
+        },
+        fail: (data, code) => {
+          this.choosedDays = []
+        }
+      })
+    },
+    setChooseDayStor(data) {
+      storage.set({
+        key: 'penny.chooseDay',
+        value: data,
+        success: function (data) {
+          console.log('handling success')
+        },
+        fail: function (data, code) {
+          console.log(`handling fail, code = ${code}`)
+        }
+      })
     },
     getMounth(day) {
       let monthObject = {
@@ -174,10 +199,11 @@
       }
       // this.allDays[this.dayIndex] = this.clickDay
       console.log(this.allDays[this.dayIndex])
-      // this.choosedDays = this.choosedDays.sort((a, b) => {
-      //   return new Date(a.day) - new Date(b.day)
-      // })
-      console.log(this.choosedDays)
+      this.choosedDays = this.choosedDays.sort((a, b) => {
+        return new Date(a.day) - new Date(b.day)
+      })
+      // console.log(this.choosedDays)
+      this.setChooseDayStor(this.choosedDays)
       this.closePop()
     },
     getCurDay(day, index) {
