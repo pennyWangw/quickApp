@@ -127,6 +127,15 @@ module.exports = {
         {
           "type": "text",
           "attr": {
+            "value": ">"
+          },
+          "classList": [
+            "arrow"
+          ]
+        },
+        {
+          "type": "text",
+          "attr": {
             "value": "—"
           },
           "classList": [
@@ -145,6 +154,15 @@ module.exports = {
           "events": {
             "change": "chooseEndTime"
           }
+        },
+        {
+          "type": "text",
+          "attr": {
+            "value": ">"
+          },
+          "classList": [
+            "arrow"
+          ]
         }
       ]
     },
@@ -156,10 +174,14 @@ module.exports = {
       ],
       "children": [
         {
-          "type": "text",
+          "type": "canvas",
           "attr": {
-            "value": function () {return this.dataContent}
-          }
+            "id": "newCanvas"
+          },
+          "classList": [
+            "new_canvas"
+          ],
+          "id": "newCanvas"
         }
       ]
     }
@@ -200,7 +222,19 @@ module.exports = {
     "paddingRight": "15px",
     "paddingBottom": "0px",
     "paddingLeft": "15px",
-    "height": "100%"
+    "height": "100%",
+    "flexDirection": "column"
+  },
+  ".new_canvas": {
+    "width": "100%",
+    "height": "90%"
+  },
+  ".arrow": {
+    "transform": "{\"rotate\":\"90deg\"}",
+    "color": "#8B1A1A",
+    "marginLeft": "5px",
+    "marginTop": "5px",
+    "fontSize": "35px"
   }
 }
 
@@ -216,9 +250,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _data = __webpack_require__(15);
+var _data2 = __webpack_require__(11);
 
-var _data2 = _interopRequireDefault(_data);
+var _data3 = _interopRequireDefault(_data2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -226,7 +260,8 @@ exports.default = {
   private: {
     startDay: '2018-09-28',
     endDay: '2018-10-28',
-    dataContent: []
+    dataContent: [],
+    drawComplete: false
   },
   chooseTime: function chooseTime(val) {
     this.startDay = val.year + '-' + (val.month < 10 ? '0' + val.month : val.month) + '-' + (val.day < 10 ? '0' + val.day : val.day);
@@ -234,11 +269,137 @@ exports.default = {
   chooseEndTime: function chooseEndTime(val) {
     this.endDay = val.year + '-' + (val.month < 10 ? '0' + val.month : val.month) + '-' + (val.day < 10 ? '0' + val.day : val.day);
   },
+  onShow: function onShow() {
+    if (!this.drawComplete) {
+      this.drawCanvas();
+    }
+  },
+  drawCanvas: function drawCanvas() {
+    var canvas = this.$element('newCanvas');
+    var ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    var initX = 50;
+    var initY = 100;
+    var endX = 720;
+    var endY = 620;
+
+    ctx.lineJoin = 'miter';
+    ctx.moveTo(initX, initY);
+    ctx.lineTo(initX, endY);
+    ctx.moveTo(initX, endY);
+    ctx.lineTo(endX, endY);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.font = '21px';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#3D3D3D';
+    ctx.fillText("年:", 0, 30);
+    ctx.fillText("月:", 0, 68);
+    ctx.fillText("日:", 0, 97);
+    var initDay = this.dataContent[0].day.split('-');
+    ctx.fillText(initDay[0], 54, 35);
+    ctx.fillText(initDay[1], 54, 65);
+
+    var n = (endY - initY) / 13;
+    ctx.beginPath();
+    for (var i = 0; i < 13; i++) {
+      var text = parseFloat(36.0 + 0.1 * i).toFixed(1);
+      var y = endY - n * i;
+      ctx.fillText(text, 0, y);
+      if (i !== 0) {
+        ctx.moveTo(initX + 1, y);
+        ctx.lineTo(endX, y);
+      }
+    }
+    ctx.strokeStyle = '#eaeaea';
+    ctx.stroke();
+    ctx.closePath();
+
+    var xN = (endX - initX) / 32;
+    ctx.beginPath();
+    for (var _i = 0; _i < 31; _i++) {
+      var x = initX + xN * _i + xN;
+      ctx.moveTo(x, initY);
+      ctx.lineTo(x, endY - 1);
+    }
+    ctx.strokeStyle = '#eaeaea';
+    ctx.stroke();
+    ctx.closePath();
+
+    var lastX = void 0;
+    var lastY = void 0;
+    for (var _i2 = 0; _i2 < this.dataContent.length; _i2++) {
+      ctx.fillStyle = '#3D3D3D';
+      var _data = this.dataContent[_i2];
+      var _y = endY - (_data.tempValue - 36) / 0.1 * n;
+      var _x = initX + xN * _i2 + 1 / 2 * xN;
+
+      ctx.beginPath();
+      if (lastX) {
+        ctx.moveTo(lastX, lastY);
+      } else {
+        ctx.moveTo(_x, _y);
+      }
+      ctx.lineTo(_x, _y);
+      ctx.strokeStyle = '#8B5742';
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.arc(_x, _y, 4, 0, 360, true);
+      ctx.fill();
+      if (_data.sexLife) {
+        ctx.arc(_x, _y, 8, 0, 370, true);
+      }
+      ctx.stroke();
+
+      var day = _data.day.split('-');
+      ctx.font = '12px';
+      if (_i2 !== 0) {
+        ctx.fillText(day[2], _x - 6, 95);
+      } else {
+        ctx.fillText(day[2], _x - 6, 91);
+      }
+      if (day[2] === '01') {
+        ctx.font = '21px';
+        ctx.fillText(day[1], _x - 12, 65);
+        if (day[1] === '01') {
+          ctx.fillText(day[0], _x - 12, 35);
+        }
+      }
+
+      ctx.font = '12px';
+      for (var j = 0; j < _data.otherText.length; j++) {
+        var char = _data.otherText[j];
+        ctx.fillText(char, _x - 6, endY + 20 + j * 12);
+      }
+
+      ctx.font = '20px';
+      ctx.fillStyle = '#8B2500';
+      if (_data.isPeriod) {
+        var pY = initY + n / 2 + 10;
+        if (_data.periodNum === '量少') {
+          ctx.font = '30px';
+          ctx.fillText('、', _x - 6, pY);
+        } else if (_data.periodNum === '量多') {
+          ctx.fillText('x', _x - 6, pY - 7);
+          ctx.fillText('x', _x - 6, pY + 7);
+        } else {
+          ctx.fillText('x', _x - 6, pY);
+        }
+      }
+      lastX = _x;
+      lastY = _y;
+    }
+
+    this.drawComplete = true;
+  },
   onMenuPress: function onMenuPress() {
     this.$app.$def.showMenu();
   },
   onInit: function onInit() {
-    this.dataContent = _data2.default;
+    this.dataContent = _data3.default;
   }
 };
 
@@ -267,11 +428,7 @@ if (moduleOwn.data && accessors.some(function (acc) {
 }}
 
 /***/ }),
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -281,7 +438,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = [{
-  day: '2018-09-01',
+  day: '2018-09-28',
+  tempValue: 36.1,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-29',
   tempValue: 36.5,
   sexLife: false,
   sexTime: '请选择时间',
@@ -289,85 +454,69 @@ exports.default = [{
   periodNum: '',
   otherText: ''
 }, {
-  day: '2018-09-02',
-  tempValue: 36.8,
-  sexLife: false,
-  sexTime: '请选择时间',
+  day: '2018-09-30',
+  tempValue: 36.6,
+  sexLife: true,
+  sexTime: '06:00',
   isPeriod: false,
   periodNum: '',
   otherText: ''
 }, {
-  day: '2018-09-03',
-  tempValue: 36.7,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: false,
-  periodNum: '',
-  otherText: ''
-}, {
-  day: '2018-09-04',
-  tempValue: 36.2,
+  day: '2018-10-01',
+  tempValue: 36.6,
   sexLife: true,
   sexTime: '21:00',
   isPeriod: false,
   periodNum: '',
-  otherText: ''
+  otherText: '52453754'
 }, {
-  day: '2018-09-05',
-  tempValue: 36.9,
-  sexLife: true,
-  sexTime: '23:00',
-  isPeriod: false,
-  periodNum: '',
-  otherText: ''
-}, {
-  day: '2018-09-06',
-  tempValue: 36.5,
+  day: '2018-10-02',
+  tempValue: 36.8,
   sexLife: false,
   sexTime: '请选择时间',
   isPeriod: true,
   periodNum: '量少',
   otherText: '腹痛'
 }, {
-  day: '2018-09-07',
-  tempValue: 36.7,
+  day: '2018-10-03',
+  tempValue: 36.9,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-04',
+  tempValue: 36.2,
+  sexLife: true,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-05',
+  tempValue: 36.3,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量多',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-06',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-07',
+  tempValue: 36.2,
   sexLife: false,
   sexTime: '请选择时间',
   isPeriod: true,
   periodNum: '量少',
-  otherText: ''
-}, {
-  day: '2018-09-08',
-  tempValue: 36.5,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: true,
-  periodNum: '量正常',
-  otherText: ''
-}, {
-  day: '2018-09-09',
-  tempValue: 36.5,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: true,
-  periodNum: '量正常',
-  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhs'
-}, {
-  day: '2018-09-10',
-  tempValue: 36.5,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: true,
-  periodNum: '量正常',
-  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
-}, {
-  day: '2018-09-11',
-  tempValue: 36.5,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: true,
-  periodNum: '量正常',
-  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+  otherText: '腹痛'
 }];
 
 /***/ })

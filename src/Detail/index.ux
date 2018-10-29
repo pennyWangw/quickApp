@@ -2,12 +2,13 @@
   <!-- template里只能有一个根节点 -->
   <div class="demo-page">
     <div class="top-title">
-      <picker type="date" value="{{startDay}}" class="picker" onchange="chooseTime"></picker>
+      <picker type="date" value="{{startDay}}" class="picker" onchange="chooseTime"></picker><text class="arrow">></text>
       <text class="margin-left-xx">—</text>
-      <picker class="margin-left-xx" type="date" value="{{endDay}}" class="picker" onchange="chooseEndTime"></picker>
+      <picker class="margin-left-xx" type="date" value="{{endDay}}" class="picker" onchange="chooseEndTime"></picker><text class="arrow">></text>
     </div>
     <div class="content-page">
-      <text>{{dataContent}}</text>
+      <canvas class="new_canvas" id="newCanvas"></canvas>
+      <!--<text>{{dataContent}}</text>-->
     </div>
   </div>
 </template>
@@ -34,13 +35,25 @@
     justify-content: center;
   }
   .margin-left-xx{
-    margin-left: 80vw;
+    margin-left: 80px;
   }
   .content-page {
     margin-top: 100px;
     width: 100%;
     padding: 0 15px;
     height: 100%;
+    flex-direction: column;
+  }
+  .new_canvas{
+    width: 100%;
+    height: 90%;
+  }
+  .arrow{
+    transform: rotate(90deg);
+    color: #8B1A1A;
+    margin-left: 5px;
+    margin-top: 5px;
+    font-size: 35px;
   }
 </style>
 
@@ -50,13 +63,148 @@
     private: {
       startDay: '2018-09-28',
       endDay: '2018-10-28',
-      dataContent: []
+      dataContent: [],
+      drawComplete: false
     },
     chooseTime (val) {
       this.startDay = (val.year + '-' + (val.month < 10 ? ('0' + val.month) : val.month) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
     },
     chooseEndTime (val) {
       this.endDay = (val.year + '-' + (val.month < 10 ? ('0' + val.month) : val.month) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
+    },
+    onShow() {
+      if(!this.drawComplete) {
+        this.drawCanvas();
+      }
+    },
+    drawCanvas() {
+      const canvas = this.$element('newCanvas'); //获取 canvas 组件
+      const ctx = canvas.getContext('2d'); //获取 canvas 绘图上下文
+      ctx.beginPath();
+      let initX = 50
+      let initY = 100
+      let endX = 720
+      let endY = 620
+      // 画外框
+      ctx.lineJoin = 'miter'
+      ctx.moveTo(initX,initY);
+      ctx.lineTo(initX,endY);
+      ctx.moveTo(initX,endY);
+      ctx.lineTo(endX,endY);
+      ctx.closePath();
+      ctx.stroke();
+      // 表头年月日
+      ctx.font = '21px';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = '#3D3D3D';
+      ctx.fillText("年:", 0, 30);
+      ctx.fillText("月:", 0, 68);
+      ctx.fillText("日:", 0, 97);
+      let initDay = this.dataContent[0].day.split('-')
+      ctx.fillText(initDay[0], 54, 35);
+      ctx.fillText(initDay[1], 54, 65);
+
+      // 画里面的横线
+      let n = (endY - initY)/13
+      ctx.beginPath();
+      for (let i = 0; i < 13; i++) {
+        let text = parseFloat(36.0 + 0.1 * i).toFixed(1)
+        let y = endY - n * i
+        ctx.fillText(text , 0, y);
+        if (i !== 0) {
+          ctx.moveTo(initX + 1,y);
+          ctx.lineTo(endX,y);
+        }
+      }
+      ctx.strokeStyle = '#eaeaea';
+      ctx.stroke();
+      ctx.closePath();
+
+      // 里面的竖线
+      let xN = (endX - initX)/32
+      ctx.beginPath();
+      for (let i = 0; i < 31; i++) {
+        let x = initX + xN * i + xN
+        ctx.moveTo(x,initY);
+        ctx.lineTo(x,endY - 1);
+      }
+      ctx.strokeStyle = '#eaeaea';
+      ctx.stroke();
+      ctx.closePath();
+
+      // 根据数据画折线
+      // ctx.beginPath();
+      let lastX
+      let lastY
+      for (let i = 0; i < this.dataContent.length; i++) {
+        ctx.fillStyle = '#3D3D3D';
+        let data = this.dataContent[i]
+        let y =endY - (data.tempValue - 36)/0.1*n
+        let x = initX + xN * i + 1/2*xN
+        // 折线
+        ctx.beginPath();
+        if (lastX) {
+          ctx.moveTo(lastX,lastY);
+        } else {
+          ctx.moveTo(x,y);
+        }
+        ctx.lineTo(x,y);
+        ctx.strokeStyle = '#8B5742';
+        ctx.stroke();
+        ctx.closePath();
+
+        // 画圆点，代表是否有性生活
+        ctx.arc(x, y, 4, 0, 360, true)
+        ctx.fill()
+        if (data.sexLife) {
+          ctx.arc(x, y, 8, 0, 370, true)
+        }
+        ctx.stroke()
+
+        // 表头年月日显示
+        let day = data.day.split('-')
+        ctx.font = '12px';
+        if (i !== 0) {
+          ctx.fillText(day[2], x - 6, 95);
+        } else {
+          ctx.fillText(day[2], x - 6, 91);
+        }
+        if (day[2] === '01') {
+          ctx.font = '21px';
+          ctx.fillText(day[1], x - 12, 65);
+          if (day[1] === '01') {
+            ctx.fillText(day[0], x - 12, 35);
+          }
+        }
+
+        // 备注信息显示
+        ctx.font = '12px';
+        for (let j = 0; j < data.otherText.length; j++) {
+          let char = data.otherText[j]
+          ctx.fillText(char, x - 6, endY + 20 + j*12);
+        }
+
+        // 月经信息显示
+        ctx.font = '20px';
+        ctx.fillStyle = '#8B2500';
+        if (data.isPeriod) {
+          let pY = initY + n/2 + 10
+          if (data.periodNum === '量少') {
+            ctx.font = '30px';
+            ctx.fillText('、', x - 6, pY);
+          } else if(data.periodNum === '量多') {
+            ctx.fillText('x', x - 6, pY - 7);
+            ctx.fillText('x', x - 6, pY + 7);
+          } else {
+            ctx.fillText('x', x - 6, pY);
+          }
+        }
+        lastX = x
+        lastY = y
+      }
+
+      this.drawComplete = true;
     },
     onMenuPress() {
       this.$app.$def.showMenu()
