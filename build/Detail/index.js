@@ -352,12 +352,17 @@ exports.default = {
       var _data = this.dataContent[_i2];
       var _y = void 0;
       var _x = initX + xN * _i2 + 1 / 2 * xN;
+
       if (_data.tempValue) {
         _y = endY - (_data.tempValue - 36) / 0.1 * n;
 
         ctx.beginPath();
         if (lastY) {
-          ctx.moveTo(lastX, lastY);
+          if (this.getDays(this.dataContent[_i2].day, this.dataContent[_i2 - 1].day) > 1) {
+            ctx.moveTo(_x, _y);
+          } else {
+            ctx.moveTo(lastX, lastY);
+          }
         } else {
           ctx.moveTo(_x, _y);
         }
@@ -421,6 +426,13 @@ exports.default = {
     }
 
     this.drawComplete = true;
+  },
+  getDays: function getDays(strDateStart, strDateEnd) {
+    var iDays = void 0;
+    var strDateS = new Date(strDateStart);
+    var strDateE = new Date(strDateEnd);
+    iDays = parseInt(Math.abs(strDateS - strDateE) / 1000 / 60 / 60 / 24);
+    return iDays;
   },
   onMenuPress: function onMenuPress() {
     this.$app.$def.showMenu();

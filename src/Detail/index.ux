@@ -162,13 +162,18 @@
         let data = this.dataContent[i]
         let y
         let x = initX + xN * i + 1 / 2 * xN
+
         if (data.tempValue) {
           y = endY - (data.tempValue - 36) / 0.1 * n
-
           // 折线
           ctx.beginPath();
           if (lastY) {
-            ctx.moveTo(lastX, lastY);
+            if (this.getDays(this.dataContent[i].day, this.dataContent[i-1].day) > 1) {
+              ctx.moveTo(x, y);
+            } else {
+              ctx.moveTo(lastX, lastY);
+            }
+
           } else {
             ctx.moveTo(x, y);
           }
@@ -198,16 +203,16 @@
         // 表头年月日显示
         let day = data.day.split('-')
         ctx.font = '12px';
-        if (i !== 0) {
+        if (i !== 0) { // 日
           ctx.fillText(day[2], x - 6, 95);
         } else {
           ctx.fillText(day[2], x - 6, 91);
         }
         if (day[2] === '01') {
           ctx.font = '21px';
-          ctx.fillText(day[1], x - 12, 65);
+          ctx.fillText(day[1], x - 12, 65); // 月
           if (day[1] === '01') {
-            ctx.fillText(day[0], x - 12, 35);
+            ctx.fillText(day[0], x - 12, 35); // 年
           }
         }
 
@@ -238,6 +243,13 @@
       }
 
       this.drawComplete = true;
+    },
+    getDays(strDateStart, strDateEnd){
+      let iDays;
+      let strDateS = new Date(strDateStart);
+      let strDateE = new Date(strDateEnd);
+      iDays = parseInt(Math.abs(strDateS - strDateE ) / 1000 / 60 / 60 /24)//把相差的毫秒数转换为天数
+      return iDays ;
     },
     onMenuPress() {
       this.$app.$def.showMenu()
