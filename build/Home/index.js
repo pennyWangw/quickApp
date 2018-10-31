@@ -127,6 +127,27 @@ module.exports = {
       ]
     },
     {
+      "type": "div",
+      "attr": {},
+      "classList": [
+        "desk"
+      ],
+      "events": {
+        "click": function (evt) {this.$app.$def.showMenu(evt)}
+      },
+      "children": [
+        {
+          "type": "text",
+          "attr": {
+            "value": "!"
+          },
+          "classList": [
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
       "type": "list",
       "attr": {
         "id": "alist"
@@ -215,7 +236,7 @@ module.exports = {
                     "key": "index",
                     "value": "day"
                   },
-                  "classList": function () {return ['item-text', (this.haveChooseDay(this.day.day)&&this.day.curMonth)?'choosename':'']},
+                  "classList": function () {return ['item-text', (this.haveChooseDay(this.day.day)&&this.day.curMonth)?(this.getChooseDay(this.day.day).isPeriod?'period-day':'choosename'):'']},
                   "events": {
                     "click": function (evt) {this.getCurDay(this.day,this.index,evt)},
                     "longpress": function (evt) {this.showRecord(this.day,evt)}
@@ -623,6 +644,10 @@ module.exports = {
     "flexWrap": "wrap"
   },
   ".choosename": {
+    "backgroundColor": "#FFE4E1",
+    "borderRadius": "35px"
+  },
+  ".period-day": {
     "backgroundColor": "#FFAEB9",
     "borderRadius": "35px"
   },
@@ -803,6 +828,28 @@ module.exports = {
     "borderBottomColor": "#EE6AA7",
     "borderLeftColor": "#EE6AA7",
     "borderRadius": "8px"
+  },
+  ".desk": {
+    "position": "fixed",
+    "top": "15px",
+    "left": "15px",
+    "height": "70px",
+    "width": "70px",
+    "borderRadius": "35px",
+    "borderTopWidth": "1px",
+    "borderRightWidth": "1px",
+    "borderBottomWidth": "1px",
+    "borderLeftWidth": "1px",
+    "borderStyle": "solid",
+    "borderTopColor": "#87CEFA",
+    "borderRightColor": "#87CEFA",
+    "borderBottomColor": "#87CEFA",
+    "borderLeftColor": "#87CEFA",
+    "justifyContent": "center",
+    "color": "#87CEFA"
+  },
+  ".blue": {
+    "color": "#87CEFA"
   }
 }
 
@@ -854,8 +901,10 @@ exports.default = {
     var date = new Date();
     var curDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-01';
     this.getMounth(curDate);
-    date.setMonth(date.getMonth() - 1);
-    this.getMounth(date.getFullYear() + '-' + (date.getMonth() + 1) + '-01');
+
+    var nextDate = new Date(curDate);
+    nextDate.setMonth(nextDate.getMonth() - 1);
+    this.getMounth(nextDate.getFullYear() + '-' + (nextDate.getMonth() + 1) + '-01');
   },
   onShow: function onShow() {
     var _this = this;
@@ -871,11 +920,12 @@ exports.default = {
     _system4.default.get({
       key: 'penny.chooseDay',
       success: function success(data) {
-        _this2.choosedDays = data;
+        if (data) {
+          console.log('storage.get', data);
+          _this2.choosedDays = JSON.parse(data);
+        }
       },
-      fail: function fail(data, code) {
-        _this2.choosedDays = [];
-      }
+      fail: function fail(data, code) {}
     });
   },
   setChooseDayStor: function setChooseDayStor(data) {
@@ -883,6 +933,7 @@ exports.default = {
       key: 'penny.chooseDay',
       value: data,
       success: function success(data) {
+        console.log('storage.get', data);
         console.log('handling success');
       },
       fail: function fail(data, code) {
@@ -958,7 +1009,6 @@ exports.default = {
       this.choosedDays.push(this.clickDay);
     }
 
-    console.log(this.allDays[this.dayIndex]);
     this.choosedDays = this.choosedDays.sort(function (a, b) {
       return new Date(a.day) - new Date(b.day);
     });
@@ -980,7 +1030,6 @@ exports.default = {
         this.clickDay.day = day.day;
         this.clickDay.curMonth = day.curMonth;
       }
-      console.log(this.clickDay);
 
       this.showPop = true;
     }
@@ -999,7 +1048,6 @@ exports.default = {
     this.dayIndex = -1;
   },
   enterkeyclick: function enterkeyclick(e) {
-    console.log(34 < e.value);
     if (!(34 < e.value && e.value < 42)) {
       this.showTemPo = true;
     } else {
@@ -1009,13 +1057,11 @@ exports.default = {
   },
   changeRadio: function changeRadio(e) {
     this.clickDay.periodNum = e.value;
-    console.log(e);
   },
   changeSex: function changeSex(e) {
     this.clickDay.sexLife = e.checked;
   },
   changePeriod: function changePeriod(e) {
-    console.log(e);
     this.clickDay.isPeriod = e.checked;
   },
   chooseTime: function chooseTime(val) {
@@ -1028,6 +1074,16 @@ exports.default = {
     return this.choosedDays.some(function (item) {
       return item.day === day;
     });
+  },
+  getChooseDay: function getChooseDay(day) {
+    var chooseDay = void 0;
+    this.choosedDays.some(function (item) {
+      if (item.day === day) {
+        chooseDay = item;
+      }
+      return item.day === day;
+    });
+    return chooseDay;
   },
   routeDetail: function routeDetail() {
     _system2.default.push({

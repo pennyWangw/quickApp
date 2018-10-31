@@ -66,7 +66,13 @@ function createShortcut () {
   })
 }
 
+function dateFormat(date) {
+  let day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+  return day
+}
+
 export default {
   showMenu,
-  createShortcut
+  createShortcut,
+  dateFormat
 }

@@ -254,6 +254,10 @@ var _data2 = __webpack_require__(11);
 
 var _data3 = _interopRequireDefault(_data2);
 
+var _system = $app_require$('@app-module/system.storage');
+
+var _system2 = _interopRequireDefault(_system);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
@@ -263,11 +267,24 @@ exports.default = {
     dataContent: [],
     drawComplete: false
   },
+  getChooseDayStor: function getChooseDayStor() {
+    var _this = this;
+
+    _system2.default.get({
+      key: 'penny.chooseDay',
+      success: function success(data) {
+        if (data) _this.dataContent = JSON.parse(data);
+      },
+      fail: function fail(data, code) {
+        _this.dataContent = [];
+      }
+    });
+  },
   chooseTime: function chooseTime(val) {
-    this.startDay = val.year + '-' + (val.month < 10 ? '0' + val.month : val.month) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+    this.startDay = val.year + '-' + (val.month + 1 < 10 ? '0' + val.month + 1 : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
   },
   chooseEndTime: function chooseEndTime(val) {
-    this.endDay = val.year + '-' + (val.month < 10 ? '0' + val.month : val.month) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+    this.endDay = val.year + '-' + (val.month + 1 < 10 ? '0' + val.month + 1 : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
   },
   onShow: function onShow() {
     if (!this.drawComplete) {
@@ -333,26 +350,36 @@ exports.default = {
     for (var _i2 = 0; _i2 < this.dataContent.length; _i2++) {
       ctx.fillStyle = '#3D3D3D';
       var _data = this.dataContent[_i2];
-      var _y = endY - (_data.tempValue - 36) / 0.1 * n;
+      var _y = void 0;
       var _x = initX + xN * _i2 + 1 / 2 * xN;
+      if (_data.tempValue) {
+        _y = endY - (_data.tempValue - 36) / 0.1 * n;
 
-      ctx.beginPath();
-      if (lastX) {
-        ctx.moveTo(lastX, lastY);
+        ctx.beginPath();
+        if (lastY) {
+          ctx.moveTo(lastX, lastY);
+        } else {
+          ctx.moveTo(_x, _y);
+        }
+        ctx.lineTo(_x, _y);
+        ctx.strokeStyle = '#8B5742';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.arc(_x, _y, 4, 0, 360, true);
+        ctx.fill();
+        if (_data.sexLife) {
+          ctx.arc(_x, _y, 8, 0, 370, true);
+        }
+        ctx.stroke();
       } else {
-        ctx.moveTo(_x, _y);
+        if (_data.sexLife) {
+          ctx.arc(_x, endY + 50, 4, 0, 360, true);
+          ctx.fill();
+          ctx.arc(_x, endY + 50, 8, 0, 370, true);
+          ctx.stroke();
+        }
       }
-      ctx.lineTo(_x, _y);
-      ctx.strokeStyle = '#8B5742';
-      ctx.stroke();
-      ctx.closePath();
-
-      ctx.arc(_x, _y, 4, 0, 360, true);
-      ctx.fill();
-      if (_data.sexLife) {
-        ctx.arc(_x, _y, 8, 0, 370, true);
-      }
-      ctx.stroke();
 
       var day = _data.day.split('-');
       ctx.font = '12px';
@@ -399,7 +426,7 @@ exports.default = {
     this.$app.$def.showMenu();
   },
   onInit: function onInit() {
-    this.dataContent = _data3.default;
+    this.getChooseDayStor();
   }
 };
 

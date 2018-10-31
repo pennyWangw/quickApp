@@ -3,6 +3,7 @@
     <div class="demo-page">
         <text class="top-title">{{new Date(year).getFullYear()}}</text>
         <div class="date-check" onclick="routeDetail"><text>查看基础体温</text></div>
+        <div class="desk" onclick="$app.$def.showMenu()"><text class="blue">!</text></div>
         <list id="alist" class="content-page" onscrolltop="getDatas">
             <list-item class="month-div" type="product" for="month in allDays" onappear="getCurYear(month.month)">
                 <div class="month-num item-text">
@@ -15,7 +16,7 @@
                 </div>
                 <div class="week-div flex-wrap">
                     <div for="(index, day) in month.day"
-                         class="item-text {{(haveChooseDay(day.day) && day.curMonth) ? 'choosename' : ''}}"
+                         class="item-text {{(haveChooseDay(day.day) && day.curMonth) ? (getChooseDay(day.day).isPeriod ? 'period-day' : 'choosename') : ''}}"
                          onclick="getCurDay(day, index)"
                          onlongpress="showRecord(day)">
                         <text class="{{day.curMonth ? '' : 'lightgray'}}">{{new Date(day.day).getDate()}}</text>
@@ -96,8 +97,10 @@
       let date = new Date()
       let curDate = `${date.getFullYear()}-${date.getMonth() + 1}-01`
       this.getMounth(curDate)
-      date.setMonth(date.getMonth() - 1)
-      this.getMounth(`${date.getFullYear()}-${date.getMonth() + 1}-01`)
+      // console.log(curDate)
+      let nextDate = new Date(curDate)
+      nextDate.setMonth(nextDate.getMonth() - 1)
+      this.getMounth(`${nextDate.getFullYear()}-${nextDate.getMonth() + 1}-01`)
     },
     onShow() {
       setTimeout(() => {
@@ -111,10 +114,14 @@
       storage.get({
         key: 'penny.chooseDay',
         success: (data) => {
-          this.choosedDays = data
+          if (data) {
+            console.log('storage.get', data)
+            this.choosedDays = JSON.parse(data)
+          }
+          // this.choosedDays = data
         },
         fail: (data, code) => {
-          this.choosedDays = []
+          // this.choosedDays = []
         }
       })
     },
@@ -123,6 +130,7 @@
         key: 'penny.chooseDay',
         value: data,
         success: function (data) {
+          console.log('storage.get', data)
           console.log('handling success')
         },
         fail: function (data, code) {
@@ -198,7 +206,7 @@
         this.choosedDays.push(this.clickDay)
       }
       // this.allDays[this.dayIndex] = this.clickDay
-      console.log(this.allDays[this.dayIndex])
+      // console.log(this.allDays[this.dayIndex])
       this.choosedDays = this.choosedDays.sort((a, b) => {
         return new Date(a.day) - new Date(b.day)
       })
@@ -220,7 +228,7 @@
           this.clickDay.day = day.day
           this.clickDay.curMonth = day.curMonth
         }
-        console.log(this.clickDay)
+        // console.log(this.clickDay)
         // this.choosedDays.push(day)
         this.showPop = true
       }
@@ -240,7 +248,7 @@
       this.dayIndex = -1
     },
     enterkeyclick (e) {
-      console.log(34 < e.value)
+      // console.log(34 < e.value)
       if (!(34 < e.value && e.value < 42)) {
         this.showTemPo = true
       } else {
@@ -250,13 +258,13 @@
     },
     changeRadio (e) {
       this.clickDay.periodNum = e.value
-      console.log(e)
+      // console.log(e)
     },
     changeSex (e) {
       this.clickDay.sexLife = e.checked
     },
     changePeriod (e) {
-      console.log(e)
+      // console.log(e)
       this.clickDay.isPeriod = e.checked
     },
     chooseTime (val) {
@@ -269,6 +277,16 @@
       return this.choosedDays.some((item) => {
         return item.day === day
       })
+    },
+    getChooseDay (day) {
+      let chooseDay
+      this.choosedDays.some((item) => {
+        if (item.day === day) {
+          chooseDay = item
+        }
+        return item.day === day
+      })
+      return chooseDay
     },
     routeDetail() {
       // 跳转到应用内的某个页面，router用法详见：文档->接口->页面路由
@@ -336,6 +354,10 @@
     }
 
     .choosename {
+        background-color: #FFE4E1;
+        border-radius: 35px;
+    }
+    .period-day{
         background-color: #FFAEB9;
         border-radius: 35px;
     }
@@ -467,5 +489,19 @@
         border: 1px solid #EE6AA7;
         border-radius: 8px;
         /*background-color: #000000;*/
+    }
+    .desk{
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        height: 70px;
+        width: 70px;
+        border-radius: 35px;
+        border:1px solid #87CEFA;
+        justify-content: center;
+        color: #87CEFA;
+    }
+    .blue{
+        color: #87CEFA;
     }
 </style>
