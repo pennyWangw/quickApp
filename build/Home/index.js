@@ -921,7 +921,6 @@ exports.default = {
       key: 'penny.chooseDay',
       success: function success(data) {
         if (data) {
-          console.log('storage.get', data);
           _this2.choosedDays = JSON.parse(data);
         }
       },
@@ -933,7 +932,6 @@ exports.default = {
       key: 'penny.chooseDay',
       value: data,
       success: function success(data) {
-        console.log('storage.get', data);
         console.log('handling success');
       },
       fail: function fail(data, code) {

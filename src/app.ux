@@ -6,6 +6,7 @@
 
   export default {
     showMenu: util.showMenu,
-    createShortcut: util.createShortcut
+    createShortcut: util.createShortcut,
+    dateFormat: util.dateFormat
   }
 </script>

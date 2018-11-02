@@ -67,8 +67,8 @@ function createShortcut () {
 }
 
 function dateFormat(date) {
-  let day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-  return day
+  console.log('dateFormat', date)
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 }
 
 export default {

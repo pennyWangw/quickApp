@@ -10,7 +10,9 @@
             <text class="arrow">></text>
         </div>
         <div class="content-page">
-            <canvas class="new_canvas" id="newCanvas"></canvas>
+            <block for="(index, content) in dataContent">
+                <canvas class="new_canvas" id="{{'newCanvas' + index}}"></canvas>
+            </block>
             <!--<text>{{dataContent}}</text>-->
         </div>
     </div>
@@ -46,13 +48,14 @@
         margin-top: 100px;
         width: 100%;
         padding: 0 15px;
-        height: 100%;
+        /*height: 100%;*/
         flex-direction: column;
+        overflow: auto;
     }
 
     .new_canvas {
         width: 100%;
-        height: 90%;
+        height: 900px;
     }
 
     .arrow {
@@ -73,34 +76,94 @@
       startDay: '2018-09-28',
       endDay: '2018-10-28',
       dataContent: [],
-      drawComplete: false
+      allData: [],
+      drawComplete: false,
+      sectionLen: 20,
+      storageData: [],
+      startIndex: 0,
+      endIndex: 0
     },
     getChooseDayStor() {
       storage.get({
         key: 'penny.chooseDay',
         success: (data) => {
-          if (data) this.dataContent = JSON.parse(data)
+          if (data) this.storageData = JSON.parse(data)
+          let len = this.storageData.length
+          this.endIndex = len
+          if (len > this.sectionLen * 2) {
+            this.startIndex = len - this.sectionLen * 2
+            this.allData = this.storageData.slice(this.startIndex, this.endIndex)
+          } else {
+            this.startIndex = 0
+            this.endIndex = len
+            this.allData = this.storageData
+          }
+          if (this.allData[0]) {
+            this.startDay = this.allData[0].day
+            this.endDay = this.allData[this.allData.length - 1].day
+          } else {
+            this.endDay = this.$app.$def.dateFormat(new Date())
+          }
+          this.initDataContent(this.allData)
         },
         fail: (data, code) => {
-          this.dataContent = []
+          this.allData = []
         }
       })
     },
-    chooseTime(val) {
-      this.startDay = (val.year + '-' + (val.month + 1 < 10 ? ('0' + val.month + 1) : val.month + 1) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
-    },
-    chooseEndTime(val) {
-      this.endDay = (val.year + '-' + (val.month + 1 < 10 ? ('0' + val.month + 1) : val.month + 1) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
-    },
-    onShow() {
-      if (!this.drawComplete) {
-        this.drawCanvas();
+    initDataContent(allData) {
+      this.dataContent = []
+      for(let i=0,len=allData.length;i<len;i+=this.sectionLen){
+        this.dataContent.push(allData.slice(i,i+this.sectionLen));
       }
     },
-    drawCanvas() {
-      const canvas = this.$element('newCanvas'); //获取 canvas 组件
+    chooseTime(val) {
+      this.startDay = (val.year + '-' + (val.month + 1 < 10 ? ('0' + (val.month + 1)) : val.month + 1) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
+      if (this.allData.length > 0) {
+        this.allData.some((item, index) => {
+          let startTime = new Date(this.startDay).getTime()
+          let curTime = new Date(item.day).getTime()
+          let back = startTime < curTime || startTime === curTime
+          if (back) {
+            this.startIndex = index
+            this.initDataContent(this.allData.slice(this.startIndex, this.endIndex))
+            this.dataDrawCanvas()
+          }
+          return back
+        })
+      }
+    },
+    chooseEndTime(val) {
+      this.endDay = (val.year + '-' + (val.month + 1 < 10 ? ('0' + (val.month + 1)) : val.month + 1) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
+      if (this.allData.length > 0) {
+        this.allData.some((item, index) => {
+          let endTime = new Date(this.endDay).getTime()
+          let curTime = new Date(item.day).getTime()
+          let back = endTime < curTime || endTime === curTime
+          if (back) {
+            this.endIndex =  index
+            this.initDataContent(this.allData.slice(this.startIndex, this.endIndex))
+            this.dataDrawCanvas()
+          }
+          return back
+        })
+      }
+    },
+    onShow() {
+      this.dataDrawCanvas()
+    },
+    dataDrawCanvas () {
+      if (!this.drawComplete) {
+        this.dataContent.forEach((content, index) => {
+          this.drawCanvas(content, index);
+        })
+      }
+    },
+    drawCanvas(content, condex) {
+      const canvas = this.$element(('newCanvas' + condex)); //获取 canvas 组件
       const ctx = canvas.getContext('2d'); //获取 canvas 绘图上下文
       ctx.beginPath();
+      ctx.clearRect(0,0,900,900);
       let initX = 50
       let initY = 100
       let endX = 720
@@ -121,7 +184,7 @@
       ctx.fillText("年:", 0, 30);
       ctx.fillText("月:", 0, 68);
       ctx.fillText("日:", 0, 97);
-      let initDay = this.dataContent[0].day.split('-')
+      let initDay = content[0].day.split('-')
       ctx.fillText(initDay[0], 54, 35);
       ctx.fillText(initDay[1], 54, 65);
 
@@ -142,9 +205,9 @@
       ctx.closePath();
 
       // 里面的竖线
-      let xN = (endX - initX) / 32
+      let xN = (endX - initX) / (this.sectionLen + 1)
       ctx.beginPath();
-      for (let i = 0; i < 31; i++) {
+      for (let i = 0; i < this.sectionLen; i++) {
         let x = initX + xN * i + xN
         ctx.moveTo(x, initY);
         ctx.lineTo(x, endY - 1);
@@ -157,18 +220,17 @@
       // ctx.beginPath();
       let lastX
       let lastY
-      for (let i = 0; i < this.dataContent.length; i++) {
+      content.forEach((item, index) => {
         ctx.fillStyle = '#3D3D3D';
-        let data = this.dataContent[i]
         let y
-        let x = initX + xN * i + 1 / 2 * xN
+        let x = initX + xN * index + 1 / 2 * xN
 
-        if (data.tempValue) {
-          y = endY - (data.tempValue - 36) / 0.1 * n
+        if (item.tempValue) {
+          y = endY - (item.tempValue - 36) / 0.1 * n
           // 折线
           ctx.beginPath();
           if (lastY) {
-            if (this.getDays(this.dataContent[i].day, this.dataContent[i-1].day) > 1) {
+            if (this.getDays(item.day, content[index-1].day) > 1) {
               ctx.moveTo(x, y);
             } else {
               ctx.moveTo(lastX, lastY);
@@ -184,12 +246,12 @@
           // 画圆点，代表是否有性生活
           ctx.arc(x, y, 4, 0, 360, true)
           ctx.fill()
-          if (data.sexLife) {
+          if (item.sexLife) {
             ctx.arc(x, y, 8, 0, 370, true)
           }
           ctx.stroke()
         } else {
-          if (data.sexLife) {
+          if (item.sexLife) {
             // 画圆点，代表是否有性生活
             ctx.arc(x, endY + 50, 4, 0, 360, true)
             ctx.fill()
@@ -198,40 +260,40 @@
           }
         }
 
-
-
         // 表头年月日显示
-        let day = data.day.split('-')
+        let day = item.day.split('-')
         ctx.font = '12px';
-        if (i !== 0) { // 日
+        if (index !== 0) { // 日
           ctx.fillText(day[2], x - 6, 95);
         } else {
           ctx.fillText(day[2], x - 6, 91);
         }
-        if (day[2] === '01') {
-          ctx.font = '21px';
-          ctx.fillText(day[1], x - 12, 65); // 月
-          if (day[1] === '01') {
+        if (lastX) {
+          let lastDay = content[index - 1].day.split('-')
+          if (lastDay[1] !== day[1]) {
+            ctx.font = '21px';
+            ctx.fillText(day[1], x - 12, 65); // 月
+          }
+          if (day[0] !== lastDay[0]) {
             ctx.fillText(day[0], x - 12, 35); // 年
           }
         }
-
         // 备注信息显示
         ctx.font = '12px';
-        for (let j = 0; j < data.otherText.length; j++) {
-          let char = data.otherText[j]
+        for (let j = 0; j < item.otherText.length; j++) {
+          let char = item.otherText[j]
           ctx.fillText(char, x - 6, endY + 20 + j*12);
         }
 
         // 月经信息显示
         ctx.font = '20px';
         ctx.fillStyle = '#8B2500';
-        if (data.isPeriod) {
+        if (item.isPeriod) {
           let pY = initY + n/2 + 10
-          if (data.periodNum === '量少') {
+          if (item.periodNum === '量少') {
             ctx.font = '30px';
             ctx.fillText('、', x - 6, pY);
-          } else if(data.periodNum === '量多') {
+          } else if(item.periodNum === '量多') {
             ctx.fillText('x', x - 6, pY - 7);
             ctx.fillText('x', x - 6, pY + 7);
           } else {
@@ -240,9 +302,9 @@
         }
         lastX = x
         lastY = y
-      }
+      })
 
-      this.drawComplete = true;
+      // this.drawComplete = true;
     },
     getDays(strDateStart, strDateEnd){
       let iDays;

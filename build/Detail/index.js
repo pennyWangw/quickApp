@@ -174,14 +174,25 @@ module.exports = {
       ],
       "children": [
         {
-          "type": "canvas",
-          "attr": {
-            "id": "newCanvas"
+          "type": "block",
+          "attr": {},
+          "repeat": {
+            "exp": function () {return this.dataContent},
+            "key": "index",
+            "value": "content"
           },
-          "classList": [
-            "new_canvas"
-          ],
-          "id": "newCanvas"
+          "children": [
+            {
+              "type": "canvas",
+              "attr": {
+                "id": function () {return 'newCanvas'+this.index}
+              },
+              "classList": [
+                "new_canvas"
+              ],
+              "id": function () {return 'newCanvas'+this.index}
+            }
+          ]
         }
       ]
     }
@@ -222,12 +233,12 @@ module.exports = {
     "paddingRight": "15px",
     "paddingBottom": "0px",
     "paddingLeft": "15px",
-    "height": "100%",
-    "flexDirection": "column"
+    "flexDirection": "column",
+    "overflow": "auto"
   },
   ".new_canvas": {
     "width": "100%",
-    "height": "90%"
+    "height": "900px"
   },
   ".arrow": {
     "transform": "{\"rotate\":\"90deg\"}",
@@ -250,9 +261,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _data2 = __webpack_require__(11);
+var _data = __webpack_require__(11);
 
-var _data3 = _interopRequireDefault(_data2);
+var _data2 = _interopRequireDefault(_data);
 
 var _system = $app_require$('@app-module/system.storage');
 
@@ -265,7 +276,12 @@ exports.default = {
     startDay: '2018-09-28',
     endDay: '2018-10-28',
     dataContent: [],
-    drawComplete: false
+    allData: [],
+    drawComplete: false,
+    sectionLen: 20,
+    storageData: [],
+    startIndex: 0,
+    endIndex: 0
   },
   getChooseDayStor: function getChooseDayStor() {
     var _this = this;
@@ -273,28 +289,91 @@ exports.default = {
     _system2.default.get({
       key: 'penny.chooseDay',
       success: function success(data) {
-        if (data) _this.dataContent = JSON.parse(data);
+        if (data) _this.storageData = JSON.parse(data);
+        var len = _this.storageData.length;
+        _this.endIndex = len;
+        if (len > _this.sectionLen * 2) {
+          _this.startIndex = len - _this.sectionLen * 2;
+          _this.allData = _this.storageData.slice(_this.startIndex, _this.endIndex);
+        } else {
+          _this.startIndex = 0;
+          _this.endIndex = len;
+          _this.allData = _this.storageData;
+        }
+        if (_this.allData[0]) {
+          _this.startDay = _this.allData[0].day;
+          _this.endDay = _this.allData[_this.allData.length - 1].day;
+        } else {
+          _this.endDay = _this.$app.$def.dateFormat(new Date());
+        }
+        _this.initDataContent(_this.allData);
       },
       fail: function fail(data, code) {
-        _this.dataContent = [];
+        _this.allData = [];
       }
     });
   },
-  chooseTime: function chooseTime(val) {
-    this.startDay = val.year + '-' + (val.month + 1 < 10 ? '0' + val.month + 1 : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
-  },
-  chooseEndTime: function chooseEndTime(val) {
-    this.endDay = val.year + '-' + (val.month + 1 < 10 ? '0' + val.month + 1 : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
-  },
-  onShow: function onShow() {
-    if (!this.drawComplete) {
-      this.drawCanvas();
+  initDataContent: function initDataContent(allData) {
+    this.dataContent = [];
+    for (var i = 0, len = allData.length; i < len; i += this.sectionLen) {
+      this.dataContent.push(allData.slice(i, i + this.sectionLen));
     }
   },
-  drawCanvas: function drawCanvas() {
-    var canvas = this.$element('newCanvas');
+  chooseTime: function chooseTime(val) {
+    var _this2 = this;
+
+    this.startDay = val.year + '-' + (val.month + 1 < 10 ? '0' + (val.month + 1) : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+    if (this.allData.length > 0) {
+      this.allData.some(function (item, index) {
+        var startTime = new Date(_this2.startDay).getTime();
+        var curTime = new Date(item.day).getTime();
+        var back = startTime < curTime || startTime === curTime;
+        if (back) {
+          _this2.startIndex = index;
+          _this2.initDataContent(_this2.allData.slice(_this2.startIndex, _this2.endIndex));
+          _this2.dataDrawCanvas();
+        }
+        return back;
+      });
+    }
+  },
+  chooseEndTime: function chooseEndTime(val) {
+    var _this3 = this;
+
+    this.endDay = val.year + '-' + (val.month + 1 < 10 ? '0' + (val.month + 1) : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+    if (this.allData.length > 0) {
+      this.allData.some(function (item, index) {
+        var endTime = new Date(_this3.endDay).getTime();
+        var curTime = new Date(item.day).getTime();
+        var back = endTime < curTime || endTime === curTime;
+        if (back) {
+          _this3.endIndex = index;
+          _this3.initDataContent(_this3.allData.slice(_this3.startIndex, _this3.endIndex));
+          _this3.dataDrawCanvas();
+        }
+        return back;
+      });
+    }
+  },
+  onShow: function onShow() {
+    this.dataDrawCanvas();
+  },
+  dataDrawCanvas: function dataDrawCanvas() {
+    var _this4 = this;
+
+    if (!this.drawComplete) {
+      this.dataContent.forEach(function (content, index) {
+        _this4.drawCanvas(content, index);
+      });
+    }
+  },
+  drawCanvas: function drawCanvas(content, condex) {
+    var _this5 = this;
+
+    var canvas = this.$element('newCanvas' + condex);
     var ctx = canvas.getContext('2d');
     ctx.beginPath();
+    ctx.clearRect(0, 0, 900, 900);
     var initX = 50;
     var initY = 100;
     var endX = 720;
@@ -315,7 +394,7 @@ exports.default = {
     ctx.fillText("年:", 0, 30);
     ctx.fillText("月:", 0, 68);
     ctx.fillText("日:", 0, 97);
-    var initDay = this.dataContent[0].day.split('-');
+    var initDay = content[0].day.split('-');
     ctx.fillText(initDay[0], 54, 35);
     ctx.fillText(initDay[1], 54, 65);
 
@@ -334,9 +413,9 @@ exports.default = {
     ctx.stroke();
     ctx.closePath();
 
-    var xN = (endX - initX) / 32;
+    var xN = (endX - initX) / (this.sectionLen + 1);
     ctx.beginPath();
-    for (var _i = 0; _i < 31; _i++) {
+    for (var _i = 0; _i < this.sectionLen; _i++) {
       var x = initX + xN * _i + xN;
       ctx.moveTo(x, initY);
       ctx.lineTo(x, endY - 1);
@@ -347,85 +426,85 @@ exports.default = {
 
     var lastX = void 0;
     var lastY = void 0;
-    for (var _i2 = 0; _i2 < this.dataContent.length; _i2++) {
+    content.forEach(function (item, index) {
       ctx.fillStyle = '#3D3D3D';
-      var _data = this.dataContent[_i2];
-      var _y = void 0;
-      var _x = initX + xN * _i2 + 1 / 2 * xN;
+      var y = void 0;
+      var x = initX + xN * index + 1 / 2 * xN;
 
-      if (_data.tempValue) {
-        _y = endY - (_data.tempValue - 36) / 0.1 * n;
+      if (item.tempValue) {
+        y = endY - (item.tempValue - 36) / 0.1 * n;
 
         ctx.beginPath();
         if (lastY) {
-          if (this.getDays(this.dataContent[_i2].day, this.dataContent[_i2 - 1].day) > 1) {
-            ctx.moveTo(_x, _y);
+          if (_this5.getDays(item.day, content[index - 1].day) > 1) {
+            ctx.moveTo(x, y);
           } else {
             ctx.moveTo(lastX, lastY);
           }
         } else {
-          ctx.moveTo(_x, _y);
+          ctx.moveTo(x, y);
         }
-        ctx.lineTo(_x, _y);
+        ctx.lineTo(x, y);
         ctx.strokeStyle = '#8B5742';
         ctx.stroke();
         ctx.closePath();
 
-        ctx.arc(_x, _y, 4, 0, 360, true);
+        ctx.arc(x, y, 4, 0, 360, true);
         ctx.fill();
-        if (_data.sexLife) {
-          ctx.arc(_x, _y, 8, 0, 370, true);
+        if (item.sexLife) {
+          ctx.arc(x, y, 8, 0, 370, true);
         }
         ctx.stroke();
       } else {
-        if (_data.sexLife) {
-          ctx.arc(_x, endY + 50, 4, 0, 360, true);
+        if (item.sexLife) {
+          ctx.arc(x, endY + 50, 4, 0, 360, true);
           ctx.fill();
-          ctx.arc(_x, endY + 50, 8, 0, 370, true);
+          ctx.arc(x, endY + 50, 8, 0, 370, true);
           ctx.stroke();
         }
       }
 
-      var day = _data.day.split('-');
+      var day = item.day.split('-');
       ctx.font = '12px';
-      if (_i2 !== 0) {
-        ctx.fillText(day[2], _x - 6, 95);
+      if (index !== 0) {
+        ctx.fillText(day[2], x - 6, 95);
       } else {
-        ctx.fillText(day[2], _x - 6, 91);
+        ctx.fillText(day[2], x - 6, 91);
       }
-      if (day[2] === '01') {
-        ctx.font = '21px';
-        ctx.fillText(day[1], _x - 12, 65);
-        if (day[1] === '01') {
-          ctx.fillText(day[0], _x - 12, 35);
+      if (lastX) {
+        var lastDay = content[index - 1].day.split('-');
+        if (lastDay[1] !== day[1]) {
+          ctx.font = '21px';
+          ctx.fillText(day[1], x - 12, 65);
+        }
+        if (day[0] !== lastDay[0]) {
+          ctx.fillText(day[0], x - 12, 35);
         }
       }
 
       ctx.font = '12px';
-      for (var j = 0; j < _data.otherText.length; j++) {
-        var char = _data.otherText[j];
-        ctx.fillText(char, _x - 6, endY + 20 + j * 12);
+      for (var j = 0; j < item.otherText.length; j++) {
+        var char = item.otherText[j];
+        ctx.fillText(char, x - 6, endY + 20 + j * 12);
       }
 
       ctx.font = '20px';
       ctx.fillStyle = '#8B2500';
-      if (_data.isPeriod) {
+      if (item.isPeriod) {
         var pY = initY + n / 2 + 10;
-        if (_data.periodNum === '量少') {
+        if (item.periodNum === '量少') {
           ctx.font = '30px';
-          ctx.fillText('、', _x - 6, pY);
-        } else if (_data.periodNum === '量多') {
-          ctx.fillText('x', _x - 6, pY - 7);
-          ctx.fillText('x', _x - 6, pY + 7);
+          ctx.fillText('、', x - 6, pY);
+        } else if (item.periodNum === '量多') {
+          ctx.fillText('x', x - 6, pY - 7);
+          ctx.fillText('x', x - 6, pY + 7);
         } else {
-          ctx.fillText('x', _x - 6, pY);
+          ctx.fillText('x', x - 6, pY);
         }
       }
-      lastX = _x;
-      lastY = _y;
-    }
-
-    this.drawComplete = true;
+      lastX = x;
+      lastY = y;
+    });
   },
   getDays: function getDays(strDateStart, strDateEnd) {
     var iDays = void 0;
