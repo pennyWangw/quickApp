@@ -128,7 +128,7 @@ function showMenu() {
   var router = $app_require$('@app-module/system.router');
   var appInfo = $app_require$('@app-module/system.app').getInfo();
   prompt.showContextMenu({
-    itemList: ['保存桌面', '关于', '取消'],
+    itemList: ['保存桌面', '体温记录方法', '取消'],
     success: function success(ret) {
       switch (ret.index) {
         case 0:

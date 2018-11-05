@@ -330,9 +330,9 @@ module.exports = {
     "height": "86px",
     "marginTop": "75px",
     "borderRadius": "43px",
-    "backgroundColor": "#09ba07",
+    "backgroundColor": "#FFAEB9",
     "fontSize": "30px",
-    "color": "#ffffff"
+    "color": "#2c2c2c"
   },
   "#footer": {
     "width": "750px",

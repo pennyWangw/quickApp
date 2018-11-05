@@ -247,7 +247,7 @@ module.exports = {
                       "attr": {
                         "value": function () {return new Date(this.day.day).getDate()}
                       },
-                      "classList": function () {return [this.day.curMonth?'':'lightgray']}
+                      "classList": function () {return [this.day.curMonth?(this.isOutDate(this.day.day)?'lightgray':''):'lightgray']}
                     }
                   ]
                 }
@@ -264,6 +264,9 @@ module.exports = {
         "out-pop"
       ],
       "shown": function () {return this.showPop},
+      "events": {
+        "click": "closePop"
+      },
       "children": [
         {
           "type": "div",
@@ -271,6 +274,9 @@ module.exports = {
           "classList": [
             "center-pop"
           ],
+          "events": {
+            "click": "defaultPrevent"
+          },
           "children": [
             {
               "type": "div",
@@ -286,7 +292,7 @@ module.exports = {
                     "close"
                   ],
                   "events": {
-                    "click": function (evt) {this.closePop(evt)}
+                    "click": "closePop"
                   },
                   "children": [
                     {
@@ -335,6 +341,7 @@ module.exports = {
                       "type": "input",
                       "attr": {
                         "value": function () {return this.clickDay.tempValue},
+                        "type": "text",
                         "maxlength": "5"
                       },
                       "events": {
@@ -349,7 +356,7 @@ module.exports = {
                 {
                   "type": "text",
                   "attr": {
-                    "value": "请输入34.00 - 42.00的数字！"
+                    "value": "请输入35.00 - 42.00的数字！"
                   },
                   "shown": function () {return this.showTemPo},
                   "classList": [
@@ -360,13 +367,14 @@ module.exports = {
                   "type": "div",
                   "attr": {},
                   "classList": [
-                    "row-inline"
+                    "row-inline",
+                    "left-25"
                   ],
                   "children": [
                     {
                       "type": "text",
                       "attr": {
-                        "value": "生活:"
+                        "value": "性生活:"
                       }
                     },
                     {
@@ -428,6 +436,12 @@ module.exports = {
                     "margin-left-pop"
                   ],
                   "children": [
+                    {
+                      "type": "text",
+                      "attr": {
+                        "value": "出血量:"
+                      }
+                    },
                     {
                       "type": "input",
                       "attr": {
@@ -512,6 +526,7 @@ module.exports = {
                     {
                       "type": "textarea",
                       "attr": {
+                        "maxlength": "20",
                         "value": function () {return this.clickDay.otherText}
                       },
                       "classList": [
@@ -667,7 +682,6 @@ module.exports = {
   },
   ".center-pop": {
     "width": "70%",
-    "height": "70%",
     "backgroundColor": "#ffffff",
     "borderRadius": "10px",
     "paddingTop": "15px",
@@ -736,10 +750,14 @@ module.exports = {
     "width": "80%"
   },
   ".margin-left-pop": {
-    "marginLeft": "70px",
+    "marginLeft": "-30px",
     "flexDirection": "row",
     "alignSelf": "flex-start",
     "marginBottom": "20px"
+  },
+  ".left-25": {
+    "marginLeft": "-30px",
+    "marginTop": "10px"
   },
   ".mask-class": {
     "maskColor": "rgba(0,0,0,1)"
@@ -748,8 +766,7 @@ module.exports = {
     "flexDirection": "column"
   },
   ".row-inline": {
-    "flexDirection": "row",
-    "marginTop": "20px"
+    "flexDirection": "row"
   },
   ".picker": {
     "width": "200px",
@@ -778,11 +795,13 @@ module.exports = {
     "paddingBottom": "6px",
     "paddingLeft": "20px",
     "fontSize": "28px",
-    "height": "300px",
-    "backgroundColor": "#FFFdFd"
+    "height": "100px",
+    "backgroundColor": "#FFFdFd",
+    "marginBottom": "15px"
   },
   ".title-area": {
-    "alignSelf": "flex-start"
+    "alignSelf": "flex-start",
+    "marginBottom": "50px"
   },
   ".right-algn": {
     "justifyContent": "flex-end",
@@ -831,15 +850,15 @@ module.exports = {
   },
   ".desk": {
     "position": "fixed",
-    "top": "15px",
+    "top": "20px",
     "left": "15px",
-    "height": "70px",
-    "width": "70px",
+    "height": "50px",
+    "width": "50px",
     "borderRadius": "35px",
-    "borderTopWidth": "1px",
-    "borderRightWidth": "1px",
-    "borderBottomWidth": "1px",
-    "borderLeftWidth": "1px",
+    "borderTopWidth": "3px",
+    "borderRightWidth": "3px",
+    "borderBottomWidth": "3px",
+    "borderLeftWidth": "3px",
     "borderStyle": "solid",
     "borderTopColor": "#87CEFA",
     "borderRightColor": "#87CEFA",
@@ -1032,7 +1051,10 @@ exports.default = {
       this.showPop = true;
     }
   },
-  closePop: function closePop() {
+  defaultPrevent: function defaultPrevent(e) {
+    e.stopPropagation();
+  },
+  closePop: function closePop(e) {
     this.showPop = false;
     this.clickDay = {
       day: '',
@@ -1046,7 +1068,7 @@ exports.default = {
     this.dayIndex = -1;
   },
   enterkeyclick: function enterkeyclick(e) {
-    if (!(34 < e.value && e.value < 42)) {
+    if (!(34.09 < e.value && e.value < 42.01)) {
       this.showTemPo = true;
     } else {
       this.showTemPo = false;
@@ -1082,6 +1104,9 @@ exports.default = {
       return item.day === day;
     });
     return chooseDay;
+  },
+  isOutDate: function isOutDate(day) {
+    return new Date().getTime() < new Date(day).getTime();
   },
   routeDetail: function routeDetail() {
     _system2.default.push({

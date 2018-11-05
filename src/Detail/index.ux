@@ -2,10 +2,10 @@
     <!-- template里只能有一个根节点 -->
     <div class="demo-page">
         <div class="top-title">
-            <picker type="date" value="{{startDay}}" class="picker" onchange="chooseTime"></picker>
+            <picker type="date" value="{{startDay}}" selected="{{startDay}}" end="{{endDay}}" class="picker" onchange="chooseTime"></picker>
             <text class="arrow">></text>
             <text class="margin-left-xx">—</text>
-            <picker class="margin-left-xx" type="date" value="{{endDay}}" class="picker"
+            <picker class="margin-left-xx" type="date" value="{{endDay}}" start="{{startDay}}" end="{{$app.$def.dateFormat(new Date())}}" selected="{{endDay}}" class="picker"
                     onchange="chooseEndTime"></picker>
             <text class="arrow">></text>
         </div>
@@ -56,6 +56,7 @@
     .new_canvas {
         width: 100%;
         height: 900px;
+        background-color: #ffffff;
     }
 
     .arrow {
@@ -120,14 +121,14 @@
     chooseTime(val) {
       this.startDay = (val.year + '-' + (val.month + 1 < 10 ? ('0' + (val.month + 1)) : val.month + 1) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
       if (this.allData.length > 0) {
+        let startTime = new Date(this.startDay).getTime()
         this.allData.some((item, index) => {
-          let startTime = new Date(this.startDay).getTime()
           let curTime = new Date(item.day).getTime()
           let back = startTime < curTime || startTime === curTime
           if (back) {
             this.startIndex = index
-            this.initDataContent(this.allData.slice(this.startIndex, this.endIndex))
-            this.dataDrawCanvas()
+            this.anotherDraw()
+            this.anotherDraw()
           }
           return back
         })
@@ -136,17 +137,23 @@
     chooseEndTime(val) {
       this.endDay = (val.year + '-' + (val.month + 1 < 10 ? ('0' + (val.month + 1)) : val.month + 1) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
       if (this.allData.length > 0) {
-        this.allData.some((item, index) => {
-          let endTime = new Date(this.endDay).getTime()
-          let curTime = new Date(item.day).getTime()
-          let back = endTime < curTime || endTime === curTime
-          if (back) {
-            this.endIndex =  index
-            this.initDataContent(this.allData.slice(this.startIndex, this.endIndex))
-            this.dataDrawCanvas()
-          }
-          return back
-        })
+        let endTime = new Date(this.endDay).getTime()
+        let lastTime = new Date(this.allData[this.allData.length - 1].day).getTime()
+        if (endTime > lastTime) {
+          this.endIndex =  this.allData.length
+          this.anotherDraw()
+        } else {
+          this.allData.some((item, index) => {
+            let curTime = new Date(item.day).getTime()
+            let back = endTime < curTime || endTime === curTime
+            if (back) {
+              this.endIndex =  index + 1
+              this.anotherDraw()
+              this.anotherDraw()
+            }
+            return back
+          })
+        }
       }
     },
     onShow() {
@@ -159,11 +166,17 @@
         })
       }
     },
+    anotherDraw () {
+      this.initDataContent(this.allData.slice(this.startIndex, this.endIndex))
+      this.drawComplete = false
+      this.dataDrawCanvas()
+    },
     drawCanvas(content, condex) {
       const canvas = this.$element(('newCanvas' + condex)); //获取 canvas 组件
       const ctx = canvas.getContext('2d'); //获取 canvas 绘图上下文
+      ctx.clearRect(0,0,1000,1000);
       ctx.beginPath();
-      ctx.clearRect(0,0,900,900);
+
       let initX = 50
       let initY = 100
       let endX = 720
@@ -221,11 +234,12 @@
       let lastX
       let lastY
       content.forEach((item, index) => {
+        let charInitY = endY + 20 //备注信息初始Y坐标位置
         ctx.fillStyle = '#3D3D3D';
         let y
         let x = initX + xN * index + 1 / 2 * xN
 
-        if (item.tempValue) {
+        if (item.tempValue && item.tempValue > 35.99 && item.tempValue < 37.21) {
           y = endY - (item.tempValue - 36) / 0.1 * n
           // 折线
           ctx.beginPath();
@@ -246,23 +260,43 @@
           // 画圆点，代表是否有性生活
           ctx.arc(x, y, 4, 0, 360, true)
           ctx.fill()
+          ctx.closePath();
+          ctx.beginPath();
           if (item.sexLife) {
             ctx.arc(x, y, 8, 0, 370, true)
+            if (item.sexTime !== '请选择时间') {
+              ctx.font = '12px';
+              ctx.fillText(item.sexTime, x - 14, charInitY);
+              charInitY += 16
+            }
           }
           ctx.stroke()
         } else {
+          ctx.font = '12px';
+          if (item.tempValue && (item.tempValue < 36 || item.tempValue > 37.2)) {
+            ctx.fillText(item.tempValue, x - 12, charInitY);
+            charInitY += 12
+          }
           if (item.sexLife) {
+            ctx.strokeStyle = '#8B5742';
+            ctx.beginPath();
             // 画圆点，代表是否有性生活
-            ctx.arc(x, endY + 50, 4, 0, 360, true)
+            ctx.arc(x, charInitY, 4, 0, 360, true)
             ctx.fill()
-            ctx.arc(x, endY + 50, 8, 0, 370, true)
+            ctx.closePath();
+            ctx.arc(x, charInitY, 8, 0, 360, true)
             ctx.stroke()
+            charInitY += 25
+            if (item.sexTime !== '请选择时间') {
+              ctx.fillText(item.sexTime, x - 14, charInitY);
+              charInitY += 14
+            }
           }
         }
 
         // 表头年月日显示
         let day = item.day.split('-')
-        ctx.font = '12px';
+        ctx.font = '14px';
         if (index !== 0) { // 日
           ctx.fillText(day[2], x - 6, 95);
         } else {
@@ -279,10 +313,11 @@
           }
         }
         // 备注信息显示
-        ctx.font = '12px';
+        ctx.font = '14px';
+
         for (let j = 0; j < item.otherText.length; j++) {
           let char = item.otherText[j]
-          ctx.fillText(char, x - 6, endY + 20 + j*12);
+          ctx.fillText(char, x - 8, charInitY + j*14);
         }
 
         // 月经信息显示
@@ -303,8 +338,11 @@
         lastX = x
         lastY = y
       })
-
-      // this.drawComplete = true;
+      ctx.closePath();
+      if (condex === this.dataContent.length - 1) {
+        this.drawComplete = true;
+      }
+      //
     },
     getDays(strDateStart, strDateEnd){
       let iDays;

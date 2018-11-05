@@ -19,15 +19,15 @@
                          class="item-text {{(haveChooseDay(day.day) && day.curMonth) ? (getChooseDay(day.day).isPeriod ? 'period-day' : 'choosename') : ''}}"
                          onclick="getCurDay(day, index)"
                          onlongpress="showRecord(day)">
-                        <text class="{{day.curMonth ? '' : 'lightgray'}}">{{new Date(day.day).getDate()}}</text>
+                        <text class="{{day.curMonth ? (isOutDate(day.day) ? 'lightgray' : '') : 'lightgray'}}">{{new Date(day.day).getDate()}}</text>
                     </div>
                 </div>
             </list-item>
         </list>
-        <div class="out-pop" if="{{showPop}}">
-            <div class="center-pop">
+        <div class="out-pop" if="{{showPop}}"  onclick="closePop">
+            <div class="center-pop" onclick="defaultPrevent">
                 <div class="close-cont">
-                    <div class="close" onclick="closePop()">
+                    <div class="close" onclick="closePop">
                         <text class="close-text">x</text>
                     </div>
                 </div>
@@ -35,11 +35,11 @@
                 <div class="content-pop">
                     <div class="row-inline">
                         <text>体温:</text>
-                        <input value="{{clickDay.tempValue}}" onchange="enterkeyclick" class="input-class" maxlength="5"/>
+                        <input value="{{clickDay.tempValue}}" type="text" onchange="enterkeyclick" class="input-class" maxlength="5"/>
                     </div>
-                    <text if="{{showTemPo}}" class="worn-text">请输入34.00 - 42.00的数字！</text>
-                    <div class="row-inline">
-                        <text>生活:</text>
+                    <text if="{{showTemPo}}" class="worn-text">请输入35.00 - 42.00的数字！</text>
+                    <div class="row-inline left-25">
+                        <text>性生活:</text>
                         <input checked="{{clickDay.sexLife}}" type="checkbox" onchange="changeSex" maxlength="5"/>
                         <picker type="time" value="{{clickDay.sexTime}}" class="picker" onchange="chooseTime"></picker>
                     </div>
@@ -48,13 +48,14 @@
                         <input checked="{{clickDay.isPeriod}}" type="checkbox" onchange="changePeriod" maxlength="5"/>
                     </div>
                     <div class="margin-left-pop">
+                        <text>出血量:</text>
                         <input id="radio1" type="radio" value="量多" name="period"  checked="{{clickDay.periodNum==='量多'}}" onchange="changeRadio"/><label target="radio1">量少</label>
                         <input id="radio2" type="radio" value="量正常" name="period" checked="{{clickDay.periodNum==='量正常'}}" onchange="changeRadio"/><label target="radio2">普通</label>
                         <input id="radio3" type="radio" value="量少" name="period" checked="{{clickDay.periodNum==='量少'}}" onchange="changeRadio"/><label target="radio3">量多</label>
                     </div>
                     <div class="row-inline">
                         <text class="title-area">备注:</text>
-                        <textarea class="text-are" onchange="getText" value="{{clickDay.otherText}}"></textarea>
+                        <textarea maxlength="20" class="text-are" onchange="getText" value="{{clickDay.otherText}}"></textarea>
                     </div>
                     <div class="row-inline right-algn">
                         <text class="btn" onclick="closePop">取消</text>
@@ -232,7 +233,10 @@
       }
 
     },
-    closePop() {
+    defaultPrevent (e) {
+      e.stopPropagation()
+    },
+    closePop(e) {
       this.showPop = false
       this.clickDay = {
         day: '',
@@ -247,7 +251,7 @@
     },
     enterkeyclick (e) {
       // console.log(34 < e.value)
-      if (!(34 < e.value && e.value < 42)) {
+      if (!(34.09 < e.value && e.value < 42.01)) {
         this.showTemPo = true
       } else {
         this.showTemPo = false
@@ -285,6 +289,9 @@
         return item.day === day
       })
       return chooseDay
+    },
+    isOutDate(day) {
+      return new Date().getTime() < new Date(day).getTime()
     },
     routeDetail() {
       // 跳转到应用内的某个页面，router用法详见：文档->接口->页面路由
@@ -378,7 +385,7 @@
 
     .center-pop {
         width: 70%;
-        height: 70%;
+        /*height: 700px;*/
         background-color: #ffffff;
         border-radius: 10px;
         padding: 15px;
@@ -426,10 +433,14 @@
         width: 80%;
     }
     .margin-left-pop{
-        margin-left: 70px;
+        margin-left: -30px;
         flex-direction: row;
         align-self: flex-start;
         margin-bottom: 20px;
+    }
+    .left-25{
+        margin-left: -30px;
+        margin-top: 10px;
     }
     .mask-class{
         mask-color: rgba(0,0,0,1)
@@ -439,7 +450,7 @@
     }
     .row-inline{
         flex-direction: row;
-        margin-top: 20px;
+        /*margin-top: 20px;*/
     }
     .picker{
         width: 200px;
@@ -455,11 +466,13 @@
         margin-left: 15px;
         padding: 6px 20px;
         font-size: 28px;
-        height: 300px;
+        height: 100px;
         background-color: #FFFdFd;
+        margin-bottom: 15px;
     }
     .title-area{
         align-self: flex-start;
+        margin-bottom: 50px;
     }
     .right-algn{
         justify-content: flex-end;
@@ -490,12 +503,12 @@
     }
     .desk{
         position: fixed;
-        top: 15px;
+        top: 20px;
         left: 15px;
-        height: 70px;
-        width: 70px;
+        height: 50px;
+        width: 50px;
         border-radius: 35px;
-        border:1px solid #87CEFA;
+        border:3px solid #87CEFA;
         justify-content: center;
         color: #87CEFA;
     }

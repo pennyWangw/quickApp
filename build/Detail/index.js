@@ -115,7 +115,9 @@ module.exports = {
           "type": "picker",
           "attr": {
             "type": "date",
-            "value": function () {return this.startDay}
+            "value": function () {return this.startDay},
+            "selected": function () {return this.startDay},
+            "end": function () {return this.endDay}
           },
           "classList": [
             "picker"
@@ -146,7 +148,10 @@ module.exports = {
           "type": "picker",
           "attr": {
             "type": "date",
-            "value": function () {return this.endDay}
+            "value": function () {return this.endDay},
+            "start": function () {return this.startDay},
+            "end": function () {return this.$app.$def.dateFormat(new Date())},
+            "selected": function () {return this.endDay}
           },
           "classList": [
             "margin-left-xx"
@@ -238,7 +243,8 @@ module.exports = {
   },
   ".new_canvas": {
     "width": "100%",
-    "height": "900px"
+    "height": "900px",
+    "backgroundColor": "#ffffff"
   },
   ".arrow": {
     "transform": "{\"rotate\":\"90deg\"}",
@@ -324,14 +330,14 @@ exports.default = {
 
     this.startDay = val.year + '-' + (val.month + 1 < 10 ? '0' + (val.month + 1) : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
     if (this.allData.length > 0) {
+      var startTime = new Date(this.startDay).getTime();
       this.allData.some(function (item, index) {
-        var startTime = new Date(_this2.startDay).getTime();
         var curTime = new Date(item.day).getTime();
         var back = startTime < curTime || startTime === curTime;
         if (back) {
           _this2.startIndex = index;
-          _this2.initDataContent(_this2.allData.slice(_this2.startIndex, _this2.endIndex));
-          _this2.dataDrawCanvas();
+          _this2.anotherDraw();
+          _this2.anotherDraw();
         }
         return back;
       });
@@ -342,17 +348,23 @@ exports.default = {
 
     this.endDay = val.year + '-' + (val.month + 1 < 10 ? '0' + (val.month + 1) : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
     if (this.allData.length > 0) {
-      this.allData.some(function (item, index) {
-        var endTime = new Date(_this3.endDay).getTime();
-        var curTime = new Date(item.day).getTime();
-        var back = endTime < curTime || endTime === curTime;
-        if (back) {
-          _this3.endIndex = index;
-          _this3.initDataContent(_this3.allData.slice(_this3.startIndex, _this3.endIndex));
-          _this3.dataDrawCanvas();
-        }
-        return back;
-      });
+      var endTime = new Date(this.endDay).getTime();
+      var lastTime = new Date(this.allData[this.allData.length - 1].day).getTime();
+      if (endTime > lastTime) {
+        this.endIndex = this.allData.length;
+        this.anotherDraw();
+      } else {
+        this.allData.some(function (item, index) {
+          var curTime = new Date(item.day).getTime();
+          var back = endTime < curTime || endTime === curTime;
+          if (back) {
+            _this3.endIndex = index + 1;
+            _this3.anotherDraw();
+            _this3.anotherDraw();
+          }
+          return back;
+        });
+      }
     }
   },
   onShow: function onShow() {
@@ -367,13 +379,19 @@ exports.default = {
       });
     }
   },
+  anotherDraw: function anotherDraw() {
+    this.initDataContent(this.allData.slice(this.startIndex, this.endIndex));
+    this.drawComplete = false;
+    this.dataDrawCanvas();
+  },
   drawCanvas: function drawCanvas(content, condex) {
     var _this5 = this;
 
     var canvas = this.$element('newCanvas' + condex);
     var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 1000, 1000);
     ctx.beginPath();
-    ctx.clearRect(0, 0, 900, 900);
+
     var initX = 50;
     var initY = 100;
     var endX = 720;
@@ -427,11 +445,12 @@ exports.default = {
     var lastX = void 0;
     var lastY = void 0;
     content.forEach(function (item, index) {
+      var charInitY = endY + 20;
       ctx.fillStyle = '#3D3D3D';
       var y = void 0;
       var x = initX + xN * index + 1 / 2 * xN;
 
-      if (item.tempValue) {
+      if (item.tempValue && item.tempValue > 35.99 && item.tempValue < 37.21) {
         y = endY - (item.tempValue - 36) / 0.1 * n;
 
         ctx.beginPath();
@@ -451,21 +470,42 @@ exports.default = {
 
         ctx.arc(x, y, 4, 0, 360, true);
         ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
         if (item.sexLife) {
           ctx.arc(x, y, 8, 0, 370, true);
+          if (item.sexTime !== '请选择时间') {
+            ctx.font = '12px';
+            ctx.fillText(item.sexTime, x - 14, charInitY);
+            charInitY += 16;
+          }
         }
         ctx.stroke();
       } else {
+        ctx.font = '12px';
+        if (item.tempValue && (item.tempValue < 36 || item.tempValue > 37.2)) {
+          ctx.fillText(item.tempValue, x - 12, charInitY);
+          charInitY += 12;
+        }
         if (item.sexLife) {
-          ctx.arc(x, endY + 50, 4, 0, 360, true);
+          ctx.strokeStyle = '#8B5742';
+          ctx.beginPath();
+
+          ctx.arc(x, charInitY, 4, 0, 360, true);
           ctx.fill();
-          ctx.arc(x, endY + 50, 8, 0, 370, true);
+          ctx.closePath();
+          ctx.arc(x, charInitY, 8, 0, 360, true);
           ctx.stroke();
+          charInitY += 25;
+          if (item.sexTime !== '请选择时间') {
+            ctx.fillText(item.sexTime, x - 14, charInitY);
+            charInitY += 14;
+          }
         }
       }
 
       var day = item.day.split('-');
-      ctx.font = '12px';
+      ctx.font = '14px';
       if (index !== 0) {
         ctx.fillText(day[2], x - 6, 95);
       } else {
@@ -482,10 +522,11 @@ exports.default = {
         }
       }
 
-      ctx.font = '12px';
+      ctx.font = '14px';
+
       for (var j = 0; j < item.otherText.length; j++) {
         var char = item.otherText[j];
-        ctx.fillText(char, x - 6, endY + 20 + j * 12);
+        ctx.fillText(char, x - 8, charInitY + j * 14);
       }
 
       ctx.font = '20px';
@@ -505,6 +546,10 @@ exports.default = {
       lastX = x;
       lastY = y;
     });
+    ctx.closePath();
+    if (condex === this.dataContent.length - 1) {
+      this.drawComplete = true;
+    }
   },
   getDays: function getDays(strDateStart, strDateEnd) {
     var iDays = void 0;
