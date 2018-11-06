@@ -9,6 +9,13 @@
                     onchange="chooseEndTime"></picker>
             <text class="arrow">></text>
         </div>
+        <div class="introduce">
+            <div><text>x: </text><text class="texts">量多</text></div>
+            <div><text>x: </text><text class="texts">量正常</text></div>
+            <div><text>、: </text><text class="texts">量少</text></div>
+            <div><text>.</text><text>: </text><text class="texts">温度</text></div>
+            <div><text class="sex">.</text><text>: </text><text class="texts">有性生活</text></div>
+        </div>
         <div class="content-page">
             <block for="(index, content) in dataContent">
                 <canvas class="new_canvas" id="{{'newCanvas' + index}}"></canvas>
@@ -45,12 +52,45 @@
     }
 
     .content-page {
-        margin-top: 100px;
+        margin-top: 150px;
         width: 100%;
         padding: 0 15px;
         /*height: 100%;*/
         flex-direction: column;
         overflow: auto;
+    }
+    .introduce{
+        width: 100%;
+        background-color: #ffffff;
+        align-self: flex-end;
+        /*width: 250px;*/
+        /*flex-direction: column;*/
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        left: 0;
+        top: 100px;
+    }
+    .introduce div{
+        margin-left: 30px;
+        align-items: center;
+    }
+    .introduce div text{
+        color: #8B1A1A;
+    }
+    .sex{
+        font-size: 50px;
+        border: 2px solid #8B1A1A;
+        height: 20px;
+        width: 20px;
+        text-align: center;
+        align-items: center;
+        border-radius: 10px;
+        justify-content: center;
+    }
+    .texts{
+        font-size: 24px;
+        /*color: #8B1A1A;*/
     }
 
     .new_canvas {
