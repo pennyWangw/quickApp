@@ -1,7 +1,937 @@
 (function(){
   
   var createPageHandler = function() {
-    return !function(t){function e(n){if(a[n])return a[n].exports;var i=a[n]={i:n,l:!1,exports:{}};return t[n].call(i.exports,i,i.exports,e),i.l=!0,i.exports}var a={};e.m=t,e.c=a,e.d=function(t,a,n){e.o(t,a)||Object.defineProperty(t,a,{configurable:!1,enumerable:!0,get:n})},e.n=function(t){var a=t&&t.__esModule?function(){return t.default}:function(){return t};return e.d(a,"a",a),a},e.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},e.p="",e(e.s=7)}([,,,,,,,function(t,e,a){var n=a(8),i=a(9),o=a(10);$app_define$("@app-component/index",[],function(t,e,a){o(a,e,t),e.__esModule&&e.default&&(a.exports=e.default),a.exports.template=n,a.exports.style=i}),$app_bootstrap$("@app-component/index",{packagerVersion:"0.0.5"})},function(t,e){t.exports={type:"div",attr:{},classList:["demo-page"],children:[{type:"div",attr:{},classList:["top-title"],children:[{type:"picker",attr:{type:"date",value:function(){return this.startDay},selected:function(){return this.startDay},end:function(){return this.endDay}},classList:["picker"],events:{change:"chooseTime"}},{type:"text",attr:{value:">"},classList:["arrow"]},{type:"text",attr:{value:"—"},classList:["margin-left-xx"]},{type:"picker",attr:{type:"date",value:function(){return this.endDay},start:function(){return this.startDay},end:function(){return this.$app.$def.dateFormat(new Date)},selected:function(){return this.endDay}},classList:["margin-left-xx"],events:{change:"chooseEndTime"}},{type:"text",attr:{value:">"},classList:["arrow"]}]},{type:"div",attr:{},classList:["introduce"],children:[{type:"div",attr:{},children:[{type:"text",attr:{value:"x: "}},{type:"text",attr:{value:"量多"},classList:["texts"]}]},{type:"div",attr:{},children:[{type:"text",attr:{value:"x: "}},{type:"text",attr:{value:"量正常"},classList:["texts"]}]},{type:"div",attr:{},children:[{type:"text",attr:{value:"、: "}},{type:"text",attr:{value:"量少"},classList:["texts"]}]},{type:"div",attr:{},children:[{type:"text",attr:{value:"."}},{type:"text",attr:{value:": "}},{type:"text",attr:{value:"温度"},classList:["texts"]}]},{type:"div",attr:{},children:[{type:"text",attr:{value:"."},classList:["sex"]},{type:"text",attr:{value:": "}},{type:"text",attr:{value:"有性生活"},classList:["texts"]}]}]},{type:"div",attr:{},classList:["content-page"],children:[{type:"block",attr:{},repeat:{exp:function(){return this.dataContent},key:"index",value:"content"},children:[{type:"canvas",attr:{id:function(){return"newCanvas"+this.index}},classList:["new_canvas"],id:function(){return"newCanvas"+this.index}}]}]}]}},function(t,e){t.exports={".demo-page":{flexDirection:"column",justifyContent:"center",alignItems:"center"},".top-title":{position:"fixed",left:"0px",top:"0px",fontSize:"40px",textAlign:"center",lineHeight:"100px",height:"100px",background:'{"values":[{"type":"linearGradient","directions":["to","bottom"],"values":["#FFAEB9","#ffffff"]}]}',color:"#2E2E2E",width:"100%",flexDirection:"row",justifyContent:"center"},".margin-left-xx":{marginLeft:"80px"},".content-page":{marginTop:"150px",width:"100%",paddingTop:"0px",paddingRight:"15px",paddingBottom:"0px",paddingLeft:"15px",flexDirection:"column",overflow:"auto"},".introduce":{width:"100%",backgroundColor:"#ffffff",alignSelf:"flex-end",alignItems:"center",justifyContent:"center",position:"fixed",left:"0px",top:"100px"},".introduce div":{marginLeft:"30px",alignItems:"center",_meta:{ruleDef:[{t:"a",n:"class",i:!1,a:"element",v:"introduce"},{t:"d"},{t:"t",n:"div"}]}},".introduce div text":{color:"#8B1A1A",_meta:{ruleDef:[{t:"a",n:"class",i:!1,a:"element",v:"introduce"},{t:"d"},{t:"t",n:"div"},{t:"d"},{t:"t",n:"text"}]}},".sex":{fontSize:"50px",borderTopWidth:"2px",borderRightWidth:"2px",borderBottomWidth:"2px",borderLeftWidth:"2px",borderStyle:"solid",borderTopColor:"#8B1A1A",borderRightColor:"#8B1A1A",borderBottomColor:"#8B1A1A",borderLeftColor:"#8B1A1A",height:"20px",width:"20px",textAlign:"center",alignItems:"center",borderRadius:"10px",justifyContent:"center"},".texts":{fontSize:"24px"},".new_canvas":{width:"100%",height:"900px",backgroundColor:"#ffffff"},".arrow":{transform:'{"rotate":"90deg"}',color:"#8B1A1A",marginLeft:"5px",marginTop:"5px",fontSize:"35px"}}},function(t,e,a){t.exports=function(t,e,n){"use strict";function i(t){return t&&t.__esModule?t:{default:t}}Object.defineProperty(e,"__esModule",{value:!0});var o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t},r=a(11),s=(i(r),n("@app-module/system.storage")),l=i(s);e.default={private:{startDay:"2018-09-28",endDay:"2018-10-28",dataContent:[],allData:[],drawComplete:!1,sectionLen:20,storageData:[],startIndex:0,endIndex:0},getChooseDayStor:function(){var t=this;l.default.get({key:"penny.chooseDay",success:function(e){e&&(t.storageData=JSON.parse(e));var a=t.storageData.length;t.endIndex=a,a>2*t.sectionLen?(t.startIndex=a-2*t.sectionLen,t.allData=t.storageData.slice(t.startIndex,t.endIndex)):(t.startIndex=0,t.endIndex=a,t.allData=t.storageData),t.allData[0]?(t.startDay=t.allData[0].day,t.endDay=t.allData[t.allData.length-1].day):t.endDay=t.$app.$def.dateFormat(new Date),t.initDataContent(t.allData)},fail:function(e,a){t.allData=[]}})},initDataContent:function(t){this.dataContent=[];for(var e=0,a=t.length;e<a;e+=this.sectionLen)this.dataContent.push(t.slice(e,e+this.sectionLen))},chooseTime:function(t){var e=this;if(this.startDay=t.year+"-"+(t.month+1<10?"0"+(t.month+1):t.month+1)+"-"+(t.day<10?"0"+t.day:t.day),this.allData.length>0){var a=new Date(this.startDay).getTime();this.allData.some(function(t,n){var i=new Date(t.day).getTime(),o=a<i||a===i;return o&&(e.startIndex=n,e.anotherDraw(),e.anotherDraw()),o})}},chooseEndTime:function(t){var e=this;if(this.endDay=t.year+"-"+(t.month+1<10?"0"+(t.month+1):t.month+1)+"-"+(t.day<10?"0"+t.day:t.day),this.allData.length>0){var a=new Date(this.endDay).getTime(),n=new Date(this.allData[this.allData.length-1].day).getTime();a>n?(this.endIndex=this.allData.length,this.anotherDraw()):this.allData.some(function(t,n){var i=new Date(t.day).getTime(),o=a<i||a===i;return o&&(e.endIndex=n+1,e.anotherDraw(),e.anotherDraw()),o})}},onShow:function(){this.dataDrawCanvas()},dataDrawCanvas:function(){var t=this;this.drawComplete||this.dataContent.forEach(function(e,a){t.drawCanvas(e,a)})},anotherDraw:function(){this.initDataContent(this.allData.slice(this.startIndex,this.endIndex)),this.drawComplete=!1,this.dataDrawCanvas()},drawCanvas:function(t,e){var a=this,n=this.$element("newCanvas"+e),i=n.getContext("2d");i.clearRect(0,0,1e3,1e3),i.beginPath();i.lineJoin="miter",i.moveTo(50,100),i.lineTo(50,620),i.moveTo(50,620),i.lineTo(720,620),i.closePath(),i.stroke(),i.font="21px",i.textAlign="left",i.textBaseline="bottom",i.fillStyle="#3D3D3D",i.fillText("年:",0,30),i.fillText("月:",0,68),i.fillText("日:",0,97);var o=t[0].day.split("-");i.fillText(o[0],54,35),i.fillText(o[1],54,65);i.beginPath();for(var r=0;r<13;r++){var s=parseFloat(36+.1*r).toFixed(1),l=620-40*r;i.fillText(s,0,l),0!==r&&(i.moveTo(51,l),i.lineTo(720,l))}i.strokeStyle="#eaeaea",i.stroke(),i.closePath();var d=670/(this.sectionLen+1);i.beginPath();for(var p=0;p<this.sectionLen;p++){var f=50+d*p+d;i.moveTo(f,100),i.lineTo(f,619)}i.strokeStyle="#eaeaea",i.stroke(),i.closePath();var c=void 0,x=void 0;t.forEach(function(e,n){var o=640;i.fillStyle="#3D3D3D";var r=void 0,s=50+d*n+.5*d;e.tempValue&&e.tempValue>35.99&&e.tempValue<37.21?(r=620-(e.tempValue-36)/.1*40,i.beginPath(),x?a.getDays(e.day,t[n-1].day)>1?i.moveTo(s,r):i.moveTo(c,x):i.moveTo(s,r),i.lineTo(s,r),i.strokeStyle="#8B5742",i.stroke(),i.closePath(),i.arc(s,r,4,0,360,!0),i.fill(),i.closePath(),i.beginPath(),e.sexLife&&(i.arc(s,r,8,0,370,!0),"请选择时间"!==e.sexTime&&(i.font="12px",i.fillText(e.sexTime,s-14,o),o+=16)),i.stroke()):(i.font="12px",e.tempValue&&(e.tempValue<36||e.tempValue>37.2)&&(i.fillText(e.tempValue,s-12,o),o+=12),e.sexLife&&(i.strokeStyle="#8B5742",i.beginPath(),i.arc(s,o,4,0,360,!0),i.fill(),i.closePath(),i.arc(s,o,8,0,360,!0),i.stroke(),o+=25,"请选择时间"!==e.sexTime&&(i.fillText(e.sexTime,s-14,o),o+=14)));var l=e.day.split("-");if(i.font="14px",0!==n?i.fillText(l[2],s-6,95):i.fillText(l[2],s-6,91),c){var p=t[n-1].day.split("-");p[1]!==l[1]&&(i.font="21px",i.fillText(l[1],s-12,65)),l[0]!==p[0]&&i.fillText(l[0],s-12,35)}i.font="14px";for(var f=0;f<e.otherText.length;f++){var u=e.otherText[f];i.fillText(u,s-8,o+14*f)}if(i.font="20px",i.fillStyle="#8B2500",e.isPeriod){"量少"===e.periodNum?(i.font="30px",i.fillText("、",s-6,130)):"量多"===e.periodNum?(i.fillText("x",s-6,123),i.fillText("x",s-6,137)):i.fillText("x",s-6,130)}c=s,x=r}),i.closePath(),e===this.dataContent.length-1&&(this.drawComplete=!0)},getDays:function(t,e){var a=new Date(t),n=new Date(e);return parseInt(Math.abs(a-n)/1e3/60/60/24)},onMenuPress:function(){this.$app.$def.showMenu()},onInit:function(){this.getChooseDayStor()}};var d=e.default||t.exports,p=["public","protected","private"];if(d.data&&p.some(function(t){return d[t]}))throw new Error('页面VM对象中的属性data不可与"'+p.join(",")+'"同时存在，请使用private替换data名称');d.data||(d.data={},d._descriptor={},p.forEach(function(t){var e=o(d[t]);if("object"===e){d.data=Object.assign(d.data,d[t]);for(var a in d[t])d._descriptor[a]={access:t}}else"function"===e&&console.warn("页面VM对象中的属性"+t+"的值不能是函数，请使用对象")}))}},function(t,e,a){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=[{day:"2018-09-28",tempValue:36.1,sexLife:!1,sexTime:"请选择时间",isPeriod:!1,periodNum:"",otherText:""},{day:"2018-09-29",tempValue:36.5,sexLife:!1,sexTime:"请选择时间",isPeriod:!1,periodNum:"",otherText:""},{day:"2018-09-30",tempValue:36.6,sexLife:!0,sexTime:"06:00",isPeriod:!1,periodNum:"",otherText:""},{day:"2018-10-01",tempValue:36.6,sexLife:!0,sexTime:"21:00",isPeriod:!1,periodNum:"",otherText:"52453754"},{day:"2018-10-02",tempValue:36.8,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量少",otherText:"腹痛"},{day:"2018-10-03",tempValue:36.9,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量正常",otherText:"腹痛"},{day:"2018-10-04",tempValue:36.2,sexLife:!0,sexTime:"请选择时间",isPeriod:!0,periodNum:"量正常",otherText:"腹痛"},{day:"2018-10-05",tempValue:36.3,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量多",otherText:"腹痛"},{day:"2018-10-06",tempValue:36.5,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量正常",otherText:"腹痛"},{day:"2018-10-07",tempValue:36.2,sexLife:!1,sexTime:"请选择时间",isPeriod:!0,periodNum:"量少",otherText:"腹痛"}]}]);
+    return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */,
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $app_template$ = __webpack_require__(8)
+var $app_style$ = __webpack_require__(9)
+var $app_script$ = __webpack_require__(10)
+
+$app_define$('@app-component/index', [], function($app_require$, $app_exports$, $app_module$){
+     $app_script$($app_module$, $app_exports$, $app_require$)
+     if ($app_exports$.__esModule && $app_exports$.default) {
+            $app_module$.exports = $app_exports$.default
+        }
+     $app_module$.exports.template = $app_template$
+     $app_module$.exports.style = $app_style$
+})
+
+$app_bootstrap$('@app-component/index',{ packagerVersion: '0.0.5'})
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  "type": "div",
+  "attr": {},
+  "classList": [
+    "demo-page"
+  ],
+  "children": [
+    {
+      "type": "div",
+      "attr": {},
+      "classList": [
+        "top-title"
+      ],
+      "children": [
+        {
+          "type": "picker",
+          "attr": {
+            "type": "date",
+            "value": function () {return this.startDay},
+            "selected": function () {return this.startDay},
+            "end": function () {return this.endDay}
+          },
+          "classList": [
+            "picker"
+          ],
+          "events": {
+            "change": "chooseTime"
+          }
+        },
+        {
+          "type": "image",
+          "attr": {
+            "src": "/Common/icon_expand.png"
+          },
+          "classList": [
+            "arrow"
+          ]
+        },
+        {
+          "type": "text",
+          "attr": {
+            "value": "—"
+          },
+          "classList": [
+            "margin-left-xx"
+          ]
+        },
+        {
+          "type": "picker",
+          "attr": {
+            "type": "date",
+            "value": function () {return this.endDay},
+            "start": function () {return this.startDay},
+            "end": function () {return this.$app.$def.dateFormat(new Date())},
+            "selected": function () {return this.endDay}
+          },
+          "classList": [
+            "margin-left-xx"
+          ],
+          "events": {
+            "change": "chooseEndTime"
+          }
+        },
+        {
+          "type": "image",
+          "attr": {
+            "src": "/Common/icon_expand.png"
+          },
+          "classList": [
+            "arrow"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "div",
+      "attr": {},
+      "classList": [
+        "introduce"
+      ],
+      "children": [
+        {
+          "type": "div",
+          "attr": {},
+          "children": [
+            {
+              "type": "image",
+              "attr": {
+                "src": "/Common/many.png"
+              },
+              "classList": [
+                "tag-icon"
+              ]
+            },
+            {
+              "type": "text",
+              "attr": {
+                "value": "量多"
+              },
+              "classList": [
+                "texts"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "attr": {},
+          "children": [
+            {
+              "type": "image",
+              "attr": {
+                "src": "/Common/normal.png"
+              },
+              "classList": [
+                "tag-icon"
+              ]
+            },
+            {
+              "type": "text",
+              "attr": {
+                "value": "量正常"
+              },
+              "classList": [
+                "texts"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "attr": {},
+          "children": [
+            {
+              "type": "image",
+              "attr": {
+                "src": "/Common/less.png"
+              },
+              "classList": [
+                "tag-icon"
+              ]
+            },
+            {
+              "type": "text",
+              "attr": {
+                "value": "量少"
+              },
+              "classList": [
+                "texts"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "attr": {},
+          "children": [
+            {
+              "type": "image",
+              "attr": {
+                "src": "/Common/temperature.png"
+              },
+              "classList": [
+                "tag-icon"
+              ]
+            },
+            {
+              "type": "text",
+              "attr": {
+                "value": "温度"
+              },
+              "classList": [
+                "texts"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "attr": {},
+          "children": [
+            {
+              "type": "image",
+              "attr": {
+                "src": "/Common/sex.png"
+              },
+              "classList": [
+                "tag-icon"
+              ]
+            },
+            {
+              "type": "text",
+              "attr": {
+                "value": "有性生活"
+              },
+              "classList": [
+                "texts"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "div",
+      "attr": {},
+      "classList": [
+        "content-page"
+      ],
+      "children": [
+        {
+          "type": "block",
+          "attr": {},
+          "repeat": {
+            "exp": function () {return this.dataContent},
+            "key": "index",
+            "value": "content"
+          },
+          "children": [
+            {
+              "type": "canvas",
+              "attr": {
+                "id": function () {return 'newCanvas'+this.index}
+              },
+              "classList": [
+                "new_canvas"
+              ],
+              "id": function () {return 'newCanvas'+this.index}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  ".demo-page": {
+    "flexDirection": "column",
+    "justifyContent": "center",
+    "alignItems": "center"
+  },
+  ".top-title": {
+    "position": "fixed",
+    "left": "0px",
+    "top": "0px",
+    "fontSize": "40px",
+    "textAlign": "center",
+    "lineHeight": "94px",
+    "height": "94px",
+    "background": "{\"values\":[{\"type\":\"linearGradient\",\"directions\":[\"to\",\"right\"],\"values\":[\"#fc5e97\",\"#fe98b7\"]}]}",
+    "color": "#ffffff",
+    "width": "100%",
+    "flexDirection": "row",
+    "justifyContent": "center"
+  },
+  ".margin-left-xx": {
+    "marginLeft": "80px",
+    "color": "#ffffff",
+    "fontSize": "30px"
+  },
+  ".content-page": {
+    "width": "100%",
+    "paddingTop": "0px",
+    "paddingRight": "15px",
+    "paddingBottom": "0px",
+    "paddingLeft": "15px",
+    "flexDirection": "column",
+    "overflow": "auto"
+  },
+  ".introduce": {
+    "width": "100%",
+    "backgroundColor": "#ffffff",
+    "alignSelf": "flex-end",
+    "marginTop": "94px",
+    "height": "90px",
+    "borderTopWidth": "0px",
+    "borderRightWidth": "0px",
+    "borderBottomWidth": "2px",
+    "borderLeftWidth": "0px",
+    "borderStyle": "solid",
+    "borderTopColor": "rgb(235,235,235)",
+    "borderRightColor": "rgb(235,235,235)",
+    "borderBottomColor": "rgb(235,235,235)",
+    "borderLeftColor": "rgb(235,235,235)",
+    "alignItems": "center",
+    "justifyContent": "center"
+  },
+  ".introduce div": {
+    "marginLeft": "30px",
+    "alignItems": "center",
+    "_meta": {
+      "ruleDef": [
+        {
+          "t": "a",
+          "n": "class",
+          "i": false,
+          "a": "element",
+          "v": "introduce"
+        },
+        {
+          "t": "d"
+        },
+        {
+          "t": "t",
+          "n": "div"
+        }
+      ]
+    }
+  },
+  ".introduce div text": {
+    "color": "rgb(39,40,47)",
+    "fontSize": "24px",
+    "_meta": {
+      "ruleDef": [
+        {
+          "t": "a",
+          "n": "class",
+          "i": false,
+          "a": "element",
+          "v": "introduce"
+        },
+        {
+          "t": "d"
+        },
+        {
+          "t": "t",
+          "n": "div"
+        },
+        {
+          "t": "d"
+        },
+        {
+          "t": "t",
+          "n": "text"
+        }
+      ]
+    }
+  },
+  ".tag-icon": {
+    "marginRight": "10px",
+    "width": "24px"
+  },
+  ".texts": {
+    "fontSize": "36px"
+  },
+  ".new_canvas": {
+    "width": "100%",
+    "height": "980px",
+    "backgroundColor": "#ffffff",
+    "marginBottom": "15px"
+  },
+  ".arrow": {
+    "marginLeft": "16px",
+    "width": "16px",
+    "alignSelf": "center"
+  },
+  ".picker": {
+    "color": "#ffffff",
+    "fontSize": "30px"
+  }
+}
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = function(module, exports, $app_require$){'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _data = __webpack_require__(11);
+
+var _data2 = _interopRequireDefault(_data);
+
+var _system = $app_require$('@app-module/system.storage');
+
+var _system2 = _interopRequireDefault(_system);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+  private: {
+    startDay: '2018-09-28',
+    endDay: '2018-10-28',
+    dataContent: [],
+    allData: [],
+    drawComplete: false,
+    sectionLen: 16,
+    storageData: [],
+    startIndex: 0,
+    endIndex: 0
+  },
+  getChooseDayStor: function getChooseDayStor() {
+    var _this = this;
+
+    _system2.default.get({
+      key: 'penny.chooseDay',
+      success: function success(data) {
+        if (data) _this.storageData = JSON.parse(data);
+        var len = _this.storageData.length;
+        _this.endIndex = len;
+        if (len > _this.sectionLen * 2) {
+          _this.startIndex = len - _this.sectionLen * 2;
+          _this.allData = _this.storageData.slice(_this.startIndex, _this.endIndex);
+        } else {
+          _this.startIndex = 0;
+          _this.endIndex = len;
+          _this.allData = _this.storageData;
+        }
+        if (_this.allData[0]) {
+          _this.startDay = _this.allData[0].day;
+          _this.endDay = _this.allData[_this.allData.length - 1].day;
+        } else {
+          _this.endDay = _this.$app.$def.dateFormat(new Date());
+        }
+        _this.initDataContent(_this.allData);
+      },
+      fail: function fail(data, code) {
+        _this.allData = [];
+      }
+    });
+  },
+  initDataContent: function initDataContent(allData) {
+    this.dataContent = [];
+    for (var i = 0, len = allData.length; i < len; i += this.sectionLen) {
+      this.dataContent.push(allData.slice(i, i + this.sectionLen));
+    }
+  },
+  chooseTime: function chooseTime(val) {
+    var _this2 = this;
+
+    this.startDay = val.year + '-' + (val.month + 1 < 10 ? '0' + (val.month + 1) : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+    if (this.allData.length > 0) {
+      var startTime = new Date(this.startDay).getTime();
+      this.allData.some(function (item, index) {
+        var curTime = new Date(item.day).getTime();
+        var back = startTime < curTime || startTime === curTime;
+        if (back) {
+          _this2.startIndex = index;
+          _this2.anotherDraw();
+          _this2.anotherDraw();
+        }
+        return back;
+      });
+    }
+  },
+  chooseEndTime: function chooseEndTime(val) {
+    var _this3 = this;
+
+    this.endDay = val.year + '-' + (val.month + 1 < 10 ? '0' + (val.month + 1) : val.month + 1) + '-' + (val.day < 10 ? '0' + val.day : val.day);
+    if (this.allData.length > 0) {
+      var endTime = new Date(this.endDay).getTime();
+      var lastTime = new Date(this.allData[this.allData.length - 1].day).getTime();
+      if (endTime > lastTime) {
+        this.endIndex = this.allData.length;
+        this.anotherDraw();
+      } else {
+        this.allData.some(function (item, index) {
+          var curTime = new Date(item.day).getTime();
+          var back = endTime < curTime || endTime === curTime;
+          if (back) {
+            _this3.endIndex = index + 1;
+            _this3.anotherDraw();
+            _this3.anotherDraw();
+          }
+          return back;
+        });
+      }
+    }
+  },
+  onShow: function onShow() {
+    this.dataDrawCanvas();
+  },
+  dataDrawCanvas: function dataDrawCanvas() {
+    var _this4 = this;
+
+    if (!this.drawComplete) {
+      this.dataContent.forEach(function (content, index) {
+        _this4.drawCanvas(content, index);
+      });
+    }
+  },
+  anotherDraw: function anotherDraw() {
+    this.initDataContent(this.allData.slice(this.startIndex, this.endIndex));
+    this.drawComplete = false;
+    this.dataDrawCanvas();
+  },
+  drawCanvas: function drawCanvas(content, condex) {
+    var _this5 = this;
+
+    var canvas = this.$element('newCanvas' + condex);
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 1000, 1000);
+    ctx.beginPath();
+    var marginleft = 12;
+    var margintop = 54;
+    var initX = 50 + marginleft + 12;
+    var initY = 133;
+    var endX = 720;
+    var endY = 800;
+
+    ctx.font = '24px';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#3D3D3D';
+    ctx.fillText("年:", marginleft, 35);
+    ctx.fillText("月:", marginleft, 83);
+    ctx.fillText("日:", marginleft, 123);
+    var initDay = content[0].day.split('-');
+    ctx.fillText(initDay[0] + '年', 54 + marginleft, 40);
+    ctx.fillText(initDay[1] + '月', 54 + marginleft, 80);
+
+    ctx.strokeStyle = '#eaeaea';
+    ctx.lineJoin = 'miter';
+    ctx.moveTo(initX, initY);
+    ctx.lineTo(initX, endY);
+    ctx.moveTo(initX, endY);
+    ctx.lineTo(endX, endY);
+    ctx.closePath();
+    ctx.stroke();
+
+    var rowNum = 15;
+    var n = (endY - initY) / rowNum;
+    ctx.beginPath();
+    ctx.font = '22px';
+    for (var i = 0; i < rowNum + 1; i++) {
+      var y = endY - n * i;
+      ctx.fillStyle = 'rgba(39,40,47,0.6)';
+      var text = void 0;
+      if (i === 0) {
+        text = '<36.0';
+        ctx.fillText(text, 0, y + 10);
+        ctx.fillStyle = 'rgba(205,231,253,0.9)';
+        ctx.fillRect(initX + 1, y - n, endX - initX, n);
+        ctx.fillStyle = 'rgba(39,40,47,0.6)';
+      } else if (i === rowNum - 1) {
+        text = '>37.2';
+        ctx.fillText(text, 0, y + 10);
+        ctx.fillStyle = 'rgba(255,220,233,0.9)';
+        ctx.fillRect(initX + 1, y, endX - initX, n);
+        ctx.fillStyle = 'rgba(39,40,47,0.6)';
+      } else if (i < rowNum - 1) {
+        text = parseFloat(36.0 + 0.1 * (i - 1)).toFixed(1);
+        ctx.fillText(text, marginleft, y + 10);
+      }
+      if (i !== 0) {
+        ctx.moveTo(initX + 1, y);
+        ctx.lineTo(endX, y);
+      }
+    }
+
+    ctx.stroke();
+    ctx.closePath();
+
+    var xN = (endX - initX) / this.sectionLen;
+    ctx.beginPath();
+    for (var _i = 0; _i < this.sectionLen; _i++) {
+      var x = initX + xN * _i + xN;
+      ctx.moveTo(x, initY);
+      ctx.lineTo(x, endY - 1);
+    }
+    ctx.strokeStyle = '#eaeaea';
+    ctx.stroke();
+    ctx.closePath();
+
+    var lastX = void 0;
+    var lastY = void 0;
+    content.forEach(function (item, index) {
+      var charInitY = endY + 20;
+      ctx.fillStyle = '#3D3D3D';
+      var y = void 0;
+      var x = initX + xN * index + 1 / 2 * xN;
+
+      if (item.tempValue) {
+        if (item.tempValue > 35.99 && item.tempValue < 37.21) {
+          y = endY - (item.tempValue - 36) / 0.1 * n - n;
+        } else if (item.tempValue < 36) {
+          y = endY;
+        } else {
+          y = endY - (37.3 - 36) / 0.1 * n - n;
+        }
+
+        ctx.beginPath();
+        if (lastY) {
+          if (_this5.getDays(item.day, content[index - 1].day) > 1) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.moveTo(lastX, lastY);
+          }
+        } else {
+          ctx.moveTo(x, y);
+        }
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = 'rgb(252,97,153)';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        if (item.sexLife) {
+          _this5.drowImg(ctx, x, y, '/Common/icon_sex.png');
+          if (item.sexTime !== '请选择时间') {
+            ctx.font = '14px';
+            ctx.fillText(item.sexTime, x - 16, charInitY);
+            charInitY += 16;
+          }
+        } else {
+          _this5.drowImg(ctx, x, y, '/Common/icon_temperature.png');
+        }
+        ctx.stroke();
+      } else {
+        ctx.font = '14px';
+        if (item.tempValue && (item.tempValue < 36 || item.tempValue > 37.2)) {
+          ctx.fillText(item.tempValue, x - 16, charInitY);
+          charInitY += 16;
+        }
+        if (item.sexLife) {
+          _this5.drowImg(ctx, x, charInitY, '/Common/icon_sex.png');
+          charInitY += 25;
+          if (item.sexTime !== '请选择时间') {
+            ctx.fillText(item.sexTime, x - 14, charInitY);
+            charInitY += 14;
+          }
+        }
+      }
+
+      var day = item.day.split('-');
+      ctx.font = '22px';
+      if (index !== 0) {
+        ctx.fillText(day[2], x - 12, 120);
+      } else {
+        ctx.fillText(day[2], x - 12, 120);
+      }
+      if (lastX) {
+        var lastDay = content[index - 1].day.split('-');
+        if (lastDay[1] !== day[1]) {
+          ctx.font = '24px';
+          ctx.fillText(day[1] + '月', x - 12, 80);
+        }
+        if (day[0] !== lastDay[0]) {
+          ctx.font = '24px';
+          ctx.fillText(day[0] + '年', x - 12, 40);
+        }
+      }
+
+      ctx.font = '18px';
+
+      for (var j = 0; j < item.otherText.length; j++) {
+        var char = item.otherText[j];
+        if (j === 0) {
+          charInitY += 12;
+        }
+        ctx.fillText(char, x - 8, charInitY + j * 22);
+      }
+
+      if (item.isPeriod) {
+        var pY = initY + n / 2;
+        if (item.periodNum === '量少') {
+          _this5.drowImg(ctx, x, pY, '/Common/icon_less.png');
+        } else if (item.periodNum === '量多') {
+          _this5.drowImg(ctx, x, pY, '/Common/icon_many.png');
+        } else {
+          _this5.drowImg(ctx, x, pY, '/Common/icon_normal.png');
+        }
+      }
+      lastX = x;
+      lastY = y;
+    });
+    ctx.closePath();
+    if (condex === this.dataContent.length - 1) {
+      this.drawComplete = true;
+    }
+  },
+  drowImg: function drowImg(ctx, x, y, src) {
+    console.log(src);
+    var img = new Image();
+    img.src = src;
+
+    img.onload = function () {
+      ctx.drawImage(img, x - 10, y - 10, 20, 20);
+    };
+    img.onerror = function () {
+      console.log("图片加载失败");
+    };
+  },
+  getDays: function getDays(strDateStart, strDateEnd) {
+    var iDays = void 0;
+    var strDateS = new Date(strDateStart);
+    var strDateE = new Date(strDateEnd);
+    iDays = parseInt(Math.abs(strDateS - strDateE) / 1000 / 60 / 60 / 24);
+    return iDays;
+  },
+  onMenuPress: function onMenuPress() {
+    this.$app.$def.showMenu();
+  },
+  onInit: function onInit() {
+    this.getChooseDayStor();
+  }
+};
+
+
+var moduleOwn = exports.default || module.exports;
+var accessors = ['public', 'protected', 'private'];
+
+if (moduleOwn.data && accessors.some(function (acc) {
+  return moduleOwn[acc];
+})) {
+  throw new Error('页面VM对象中的属性data不可与"' + accessors.join(',') + '"同时存在，请使用private替换data名称');
+} else if (!moduleOwn.data) {
+  moduleOwn.data = {};
+  moduleOwn._descriptor = {};
+  accessors.forEach(function (acc) {
+    var accType = _typeof(moduleOwn[acc]);
+    if (accType === 'object') {
+      moduleOwn.data = Object.assign(moduleOwn.data, moduleOwn[acc]);
+      for (var name in moduleOwn[acc]) {
+        moduleOwn._descriptor[name] = { access: acc };
+      }
+    } else if (accType === 'function') {
+      console.warn('页面VM对象中的属性' + acc + '的值不能是函数，请使用对象');
+    }
+  });
+}}
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = [{
+  day: '2018-09-01',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-02',
+  tempValue: 36.8,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-03',
+  tempValue: 36.7,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-04',
+  tempValue: 36.2,
+  sexLife: true,
+  sexTime: '21:00',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-05',
+  tempValue: 36.9,
+  sexLife: true,
+  sexTime: '23:00',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-06',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量少',
+  otherText: '腹痛'
+}, {
+  day: '2018-09-07',
+  tempValue: 36.7,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量少',
+  otherText: ''
+}, {
+  day: '2018-09-08',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: ''
+}, {
+  day: '2018-09-09',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhs'
+}, {
+  day: '2018-09-10',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+}, {
+  day: '2018-09-11',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+}];
+
+/***/ })
+/******/ ]);
   };
   if (typeof window === "undefined") {
     return createPageHandler();
@@ -10,3 +940,4 @@
     window.createPageHandler = createPageHandler
   }
 })();
+//# sourceMappingURL=index.js.map

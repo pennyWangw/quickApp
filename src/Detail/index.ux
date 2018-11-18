@@ -3,18 +3,18 @@
     <div class="demo-page">
         <div class="top-title">
             <picker type="date" value="{{startDay}}" selected="{{startDay}}" end="{{endDay}}" class="picker" onchange="chooseTime"></picker>
-            <text class="arrow">></text>
+            <image src="/Common/icon_expand.png" class="arrow"></image>
             <text class="margin-left-xx">—</text>
             <picker class="margin-left-xx" type="date" value="{{endDay}}" start="{{startDay}}" end="{{$app.$def.dateFormat(new Date())}}" selected="{{endDay}}" class="picker"
                     onchange="chooseEndTime"></picker>
-            <text class="arrow">></text>
+            <image src="/Common/icon_expand.png" class="arrow"></image>
         </div>
         <div class="introduce">
-            <div><text>x: </text><text class="texts">量多</text></div>
-            <div><text>x: </text><text class="texts">量正常</text></div>
-            <div><text>、: </text><text class="texts">量少</text></div>
-            <div><text>.</text><text>: </text><text class="texts">温度</text></div>
-            <div><text class="sex">.</text><text>: </text><text class="texts">有性生活</text></div>
+            <div><image src="/Common/many.png" class="tag-icon"></image><text class="texts">量多</text></div>
+            <div><image src="/Common/normal.png" class="tag-icon"></image><text class="texts">量正常</text></div>
+            <div><image src="/Common/less.png" class="tag-icon"></image><text class="texts">量少</text></div>
+            <div><image src="/Common/temperature.png" class="tag-icon"></image><text class="texts">温度</text></div>
+            <div><image src="/Common/sex.png" class="tag-icon"></image><text class="texts">有性生活</text></div>
         </div>
         <div class="content-page">
             <block for="(index, content) in dataContent">
@@ -38,10 +38,10 @@
         top: 0;
         font-size: 40px;
         text-align: center;
-        line-height: 100px;
-        height: 100px;
-        background: linear-gradient(#FFAEB9, #ffffff);
-        color: #2E2E2E;
+        line-height: 94px;
+        height: 94px;
+        background: linear-gradient(to right, #fc5e97, #fe98b7);
+        color: #ffffff;
         width: 100%;
         flex-direction: row;
         justify-content: center;
@@ -49,10 +49,12 @@
 
     .margin-left-xx {
         margin-left: 80px;
+        color: #ffffff;
+        font-size: 30px;
     }
 
     .content-page {
-        margin-top: 150px;
+        /*margin-top: 150px;*/
         width: 100%;
         padding: 0 15px;
         /*height: 100%;*/
@@ -63,48 +65,47 @@
         width: 100%;
         background-color: #ffffff;
         align-self: flex-end;
-        /*width: 250px;*/
-        /*flex-direction: column;*/
+        margin-top: 94px;
+        height: 90px;
+        border: 2px solid rgb(235,235,235);
+        border-top-width: 0;
+        border-left-width: 0;
+        border-right-width: 0;
         align-items: center;
         justify-content: center;
-        position: fixed;
-        left: 0;
-        top: 100px;
     }
     .introduce div{
         margin-left: 30px;
         align-items: center;
     }
     .introduce div text{
-        color: #8B1A1A;
+        color: rgb(39,40,47);
+        font-size: 24px;
     }
-    .sex{
-        font-size: 50px;
-        border: 2px solid #8B1A1A;
-        height: 20px;
-        width: 20px;
-        text-align: center;
-        align-items: center;
-        border-radius: 10px;
-        justify-content: center;
+    .tag-icon{
+        margin-right: 10px;
+        width: 24px;
     }
     .texts{
-        font-size: 24px;
+        font-size: 36px;
         /*color: #8B1A1A;*/
     }
 
     .new_canvas {
         width: 100%;
-        height: 900px;
+        height: 980px;
         background-color: #ffffff;
+        margin-bottom: 15px;
     }
 
     .arrow {
-        transform: rotate(90deg);
-        color: #8B1A1A;
-        margin-left: 5px;
-        margin-top: 5px;
-        font-size: 35px;
+        margin-left: 16px;
+        width: 16px;
+        align-self: center;
+    }
+    .picker{
+        color: #ffffff;
+        font-size: 30px !important;
     }
 </style>
 
@@ -119,7 +120,7 @@
       dataContent: [],
       allData: [],
       drawComplete: false,
-      sectionLen: 20,
+      sectionLen: 16,
       storageData: [],
       startIndex: 0,
       endIndex: 0
@@ -216,12 +217,26 @@
       const ctx = canvas.getContext('2d'); //获取 canvas 绘图上下文
       ctx.clearRect(0,0,1000,1000);
       ctx.beginPath();
-
-      let initX = 50
-      let initY = 100
+      let marginleft = 12
+      let margintop = 54
+      let initX = 50 + marginleft + 12
+      let initY = 133
       let endX = 720
-      let endY = 620
+      let endY = 800
+
+      // 表头年月日
+      ctx.font = '24px';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = '#3D3D3D';
+      ctx.fillText("年:", marginleft, 35);
+      ctx.fillText("月:", marginleft, 83);
+      ctx.fillText("日:", marginleft, 123);
+      let initDay = content[0].day.split('-')
+      ctx.fillText(initDay[0] + '年', 54 + marginleft, 40);
+      ctx.fillText(initDay[1] + '月', 54 + marginleft, 80);
       // 画外框
+      ctx.strokeStyle = '#eaeaea';
       ctx.lineJoin = 'miter'
       ctx.moveTo(initX, initY);
       ctx.lineTo(initX, endY);
@@ -229,36 +244,42 @@
       ctx.lineTo(endX, endY);
       ctx.closePath();
       ctx.stroke();
-      // 表头年月日
-      ctx.font = '21px';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'bottom';
-      ctx.fillStyle = '#3D3D3D';
-      ctx.fillText("年:", 0, 30);
-      ctx.fillText("月:", 0, 68);
-      ctx.fillText("日:", 0, 97);
-      let initDay = content[0].day.split('-')
-      ctx.fillText(initDay[0], 54, 35);
-      ctx.fillText(initDay[1], 54, 65);
 
       // 画里面的横线
-      let n = (endY - initY) / 13
+      let rowNum = 15
+      let n = (endY - initY) / rowNum
       ctx.beginPath();
-      for (let i = 0; i < 13; i++) {
-        let text = parseFloat(36.0 + 0.1 * i).toFixed(1)
+      ctx.font = '22px';
+      for (let i = 0; i < rowNum + 1; i++) {
         let y = endY - n * i
-        ctx.fillText(text, 0, y);
+        ctx.fillStyle = 'rgba(39,40,47,0.6)';
+        let text
+        if (i === 0) {
+          text = '<36.0'
+          ctx.fillText(text, 0, y + 10);
+          ctx.fillStyle = 'rgba(205,231,253,0.9)';
+          ctx.fillRect(initX + 1, y - n, endX - initX, n);
+          ctx.fillStyle = 'rgba(39,40,47,0.6)';
+        } else if (i === rowNum - 1) {
+          text = '>37.2'
+          ctx.fillText(text, 0, y + 10);
+          ctx.fillStyle = 'rgba(255,220,233,0.9)';
+          ctx.fillRect(initX + 1, y, endX - initX, n);
+          ctx.fillStyle = 'rgba(39,40,47,0.6)';
+        } else if (i < rowNum - 1) {
+          text = parseFloat(36.0 + 0.1 * (i - 1)).toFixed(1)
+          ctx.fillText(text, marginleft, y + 10);
+        }
         if (i !== 0) {
           ctx.moveTo(initX + 1, y);
           ctx.lineTo(endX, y);
         }
       }
-      ctx.strokeStyle = '#eaeaea';
+
       ctx.stroke();
       ctx.closePath();
-
       // 里面的竖线
-      let xN = (endX - initX) / (this.sectionLen + 1)
+      let xN = (endX - initX) / (this.sectionLen)
       ctx.beginPath();
       for (let i = 0; i < this.sectionLen; i++) {
         let x = initX + xN * i + xN
@@ -270,7 +291,6 @@
       ctx.closePath();
 
       // 根据数据画折线
-      // ctx.beginPath();
       let lastX
       let lastY
       content.forEach((item, index) => {
@@ -279,8 +299,14 @@
         let y
         let x = initX + xN * index + 1 / 2 * xN
 
-        if (item.tempValue && item.tempValue > 35.99 && item.tempValue < 37.21) {
-          y = endY - (item.tempValue - 36) / 0.1 * n
+        if (item.tempValue) {
+          if (item.tempValue > 35.99 && item.tempValue < 37.21) {
+            y = endY - (item.tempValue - 36) / 0.1 * n - n
+          } else if (item.tempValue < 36) {
+            y = endY
+          } else {
+            y = endY - (37.3 - 36) / 0.1 * n - n
+          }
           // 折线
           ctx.beginPath();
           if (lastY) {
@@ -294,38 +320,32 @@
             ctx.moveTo(x, y);
           }
           ctx.lineTo(x, y);
-          ctx.strokeStyle = '#8B5742';
+          ctx.strokeStyle = 'rgb(252,97,153)';
+          ctx.lineWidth = 4
           ctx.stroke();
           ctx.closePath();
           // 画圆点，代表是否有性生活
-          ctx.arc(x, y, 4, 0, 360, true)
-          ctx.fill()
-          ctx.closePath();
           ctx.beginPath();
           if (item.sexLife) {
-            ctx.arc(x, y, 8, 0, 370, true)
+            this.drowImg(ctx, x, y, '/Common/icon_sex.png')
             if (item.sexTime !== '请选择时间') {
-              ctx.font = '12px';
-              ctx.fillText(item.sexTime, x - 14, charInitY);
+              ctx.font = '14px';
+              ctx.fillText(item.sexTime, x - 16, charInitY);
               charInitY += 16
             }
+          } else {
+            this.drowImg(ctx, x, y, '/Common/icon_temperature.png')
           }
           ctx.stroke()
         } else {
-          ctx.font = '12px';
+          ctx.font = '14px';
           if (item.tempValue && (item.tempValue < 36 || item.tempValue > 37.2)) {
-            ctx.fillText(item.tempValue, x - 12, charInitY);
-            charInitY += 12
+            ctx.fillText(item.tempValue, x - 16, charInitY);
+            charInitY += 16
           }
           if (item.sexLife) {
-            ctx.strokeStyle = '#8B5742';
-            ctx.beginPath();
             // 画圆点，代表是否有性生活
-            ctx.arc(x, charInitY, 4, 0, 360, true)
-            ctx.fill()
-            ctx.closePath();
-            ctx.arc(x, charInitY, 8, 0, 360, true)
-            ctx.stroke()
+            this.drowImg(ctx, x, charInitY, '/Common/icon_sex.png')
             charInitY += 25
             if (item.sexTime !== '请选择时间') {
               ctx.fillText(item.sexTime, x - 14, charInitY);
@@ -336,43 +356,43 @@
 
         // 表头年月日显示
         let day = item.day.split('-')
-        ctx.font = '14px';
+        ctx.font = '22px';
         if (index !== 0) { // 日
-          ctx.fillText(day[2], x - 6, 95);
+          ctx.fillText(day[2], x - 12, 120);
         } else {
-          ctx.fillText(day[2], x - 6, 91);
+          ctx.fillText(day[2], x - 12, 120);
         }
         if (lastX) {
           let lastDay = content[index - 1].day.split('-')
           if (lastDay[1] !== day[1]) {
-            ctx.font = '21px';
-            ctx.fillText(day[1], x - 12, 65); // 月
+            ctx.font = '24px';
+            ctx.fillText(day[1] + '月', x - 12, 80); // 月
           }
           if (day[0] !== lastDay[0]) {
-            ctx.fillText(day[0], x - 12, 35); // 年
+            ctx.font = '24px';
+            ctx.fillText(day[0] + '年', x - 12, 40); // 年
           }
         }
         // 备注信息显示
-        ctx.font = '14px';
+        ctx.font = '18px';
 
         for (let j = 0; j < item.otherText.length; j++) {
           let char = item.otherText[j]
-          ctx.fillText(char, x - 8, charInitY + j*14);
+          if (j === 0) {
+            charInitY += 12
+          }
+          ctx.fillText(char, x - 8, charInitY + j*22);
         }
 
         // 月经信息显示
-        ctx.font = '20px';
-        ctx.fillStyle = '#8B2500';
         if (item.isPeriod) {
-          let pY = initY + n/2 + 10
+          let pY = initY + n/2
           if (item.periodNum === '量少') {
-            ctx.font = '30px';
-            ctx.fillText('、', x - 6, pY);
+            this.drowImg(ctx, x, pY, '/Common/icon_less.png')
           } else if(item.periodNum === '量多') {
-            ctx.fillText('x', x - 6, pY - 7);
-            ctx.fillText('x', x - 6, pY + 7);
+            this.drowImg(ctx, x, pY, '/Common/icon_many.png')
           } else {
-            ctx.fillText('x', x - 6, pY);
+            this.drowImg(ctx, x, pY, '/Common/icon_normal.png')
           }
         }
         lastX = x
@@ -383,6 +403,18 @@
         this.drawComplete = true;
       }
       //
+    },
+    drowImg(ctx, x, y, src){
+      console.log(src)
+      const img = new Image(); //新建图像对象
+      img.src = src; //加载本地图片
+
+      img.onload = function () {
+        ctx.drawImage(img, x-10, y-10, 20, 20)
+      }
+      img.onerror = function () {
+        console.log("图片加载失败");
+      }
     },
     getDays(strDateStart, strDateEnd){
       let iDays;

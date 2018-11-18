@@ -2,8 +2,8 @@
     <!-- template里只能有一个根节点 -->
     <div class="demo-page">
         <text class="top-title">{{new Date(year).getFullYear()}}</text>
-        <div class="date-check" onclick="routeDetail"><text>查看基础体温</text></div>
-        <div class="desk" onclick="$app.$def.showMenu()"><text class="blue">!</text></div>
+        <div class="date-check" onclick="routeDetail"><text class="check-text" color="#ffffff">查看基础体温</text></div>
+        <div class="desk" onclick="$app.$def.showMenu()"><image src="/Common/btn_more@3x.png"></image></div>
         <list id="alist" class="content-page" onscrolltop="getDatas">
             <list-item class="month-div" type="product" for="month in allDays" onappear="getCurYear(month.month)">
                 <div class="month-num item-text">
@@ -192,25 +192,27 @@
       this.year = event
     },
     sureAdd () {
-      let haveDay = false
-      for (let i = 0; i < this.choosedDays.length; i++) {
-        let curChooseDay = this.choosedDays[i]
-        if (curChooseDay.day === this.clickDay.day) {
-          this.choosedDays[i] = this.clickDay
-          haveDay = true
-          break
+      if (this.clickDay.tempValue || this.clickDay.sexLife || this.clickDay.sexTime !== '请选择时间' || this.clickDay.isPeriod || this.clickDay.periodNum || this.clickDay.otherText) {
+        let haveDay = false
+        for (let i = 0; i < this.choosedDays.length; i++) {
+          let curChooseDay = this.choosedDays[i]
+          if (curChooseDay.day === this.clickDay.day) {
+            this.choosedDays[i] = this.clickDay
+            haveDay = true
+            break
+          }
         }
+        if (!haveDay) {
+          this.choosedDays.push(this.clickDay)
+        }
+        // this.allDays[this.dayIndex] = this.clickDay
+        // console.log(this.allDays[this.dayIndex])
+        this.choosedDays = this.choosedDays.sort((a, b) => {
+          return new Date(a.day) - new Date(b.day)
+        })
+        // console.log(this.choosedDays)
+        this.setChooseDayStor(this.choosedDays)
       }
-      if (!haveDay) {
-        this.choosedDays.push(this.clickDay)
-      }
-      // this.allDays[this.dayIndex] = this.clickDay
-      // console.log(this.allDays[this.dayIndex])
-      this.choosedDays = this.choosedDays.sort((a, b) => {
-        return new Date(a.day) - new Date(b.day)
-      })
-      // console.log(this.choosedDays)
-      this.setChooseDayStor(this.choosedDays)
       this.closePop()
     },
     getCurDay(day, index) {
@@ -317,8 +319,8 @@
         text-align: center;
         line-height: 100px;
         height: 100px;
-        background: linear-gradient(#FFAEB9, #ffffff);
-        color: #2E2E2E;
+        background: linear-gradient(to right, #fc5e97, #fe98b7);
+        color: #ffffff;
         width: 100%;
     }
 
@@ -359,11 +361,11 @@
     }
 
     .choosename {
-        background-color: #FFE4E1;
+        background-color: rgba(252,97,153,0.1);
         border-radius: 35px;
     }
     .period-day{
-        background-color: #FFAEB9;
+        background-color: rgba(252,97,153,0.5);
         border-radius: 35px;
     }
 
@@ -491,26 +493,28 @@
     }
     .date-check{
         position: fixed;
-        width: 200px;
-        height: 70px;
+        width: 220px;
+        height: 60px;
         right: 30px;
-        top: 15px;
+        top: 20px;
         display: flex;
         justify-content: center;
-        border: 1px solid #EE6AA7;
-        border-radius: 8px;
+        border: 1px solid #ffffff;
+        border-radius: 4px;
+        color: #ffffff;
         /*background-color: #000000;*/
+    }
+    .check-text{
+        font-size: 30px;
     }
     .desk{
         position: fixed;
-        top: 20px;
-        left: 15px;
+        top: 25px;
+        left: 30px;
         height: 50px;
         width: 50px;
         border-radius: 35px;
-        border:3px solid #87CEFA;
         justify-content: center;
-        color: #87CEFA;
     }
     .blue{
         color: #87CEFA;
