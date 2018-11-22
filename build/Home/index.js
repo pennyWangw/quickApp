@@ -446,13 +446,13 @@ module.exports = {
                     {
                       "type": "input",
                       "attr": {
-                        "id": "radio1",
+                        "id": "radio3",
                         "type": "radio",
-                        "value": "量多",
+                        "value": "量少",
                         "name": "period",
-                        "checked": function () {return this.clickDay.periodNum==='量多'}
+                        "checked": function () {return this.clickDay.periodNum==='量少'}
                       },
-                      "id": "radio1",
+                      "id": "radio3",
                       "events": {
                         "change": "changeRadio"
                       }
@@ -460,7 +460,7 @@ module.exports = {
                     {
                       "type": "label",
                       "attr": {
-                        "target": "radio1",
+                        "target": "radio3",
                         "value": "量少"
                       }
                     },
@@ -488,13 +488,13 @@ module.exports = {
                     {
                       "type": "input",
                       "attr": {
-                        "id": "radio3",
+                        "id": "radio1",
                         "type": "radio",
-                        "value": "量少",
+                        "value": "量多",
                         "name": "period",
-                        "checked": function () {return this.clickDay.periodNum==='量少'}
+                        "checked": function () {return this.clickDay.periodNum==='量多'}
                       },
-                      "id": "radio3",
+                      "id": "radio1",
                       "events": {
                         "change": "changeRadio"
                       }
@@ -502,7 +502,7 @@ module.exports = {
                     {
                       "type": "label",
                       "attr": {
-                        "target": "radio3",
+                        "target": "radio1",
                         "value": "量多"
                       }
                     }
@@ -1079,6 +1079,7 @@ exports.default = {
   },
   changeRadio: function changeRadio(e) {
     this.clickDay.periodNum = e.value;
+    console.log(e);
   },
   changeSex: function changeSex(e) {
     this.clickDay.sexLife = e.checked;

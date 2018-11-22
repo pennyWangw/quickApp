@@ -49,9 +49,9 @@
                     </div>
                     <div class="margin-left-pop">
                         <text>出血量:</text>
-                        <input id="radio1" type="radio" value="量多" name="period"  checked="{{clickDay.periodNum==='量多'}}" onchange="changeRadio"/><label target="radio1">量少</label>
+                        <input id="radio3" type="radio" value="量少" name="period" checked="{{clickDay.periodNum==='量少'}}" onchange="changeRadio"/><label target="radio3">量少</label>
                         <input id="radio2" type="radio" value="量正常" name="period" checked="{{clickDay.periodNum==='量正常'}}" onchange="changeRadio"/><label target="radio2">普通</label>
-                        <input id="radio3" type="radio" value="量少" name="period" checked="{{clickDay.periodNum==='量少'}}" onchange="changeRadio"/><label target="radio3">量多</label>
+                        <input id="radio1" type="radio" value="量多" name="period"  checked="{{clickDay.periodNum==='量多'}}" onchange="changeRadio"/><label target="radio1">量多</label>
                     </div>
                     <div class="row-inline">
                         <text class="title-area">备注:</text>
@@ -266,7 +266,7 @@
     },
     changeRadio (e) {
       this.clickDay.periodNum = e.value
-      // console.log(e)
+      console.log(e)
     },
     changeSex (e) {
       this.clickDay.sexLife = e.checked
