@@ -217,7 +217,7 @@
     },
     getCurDay(day, index) {
       this.dayIndex = index
-      if (day.curMonth) {
+      if (day.curMonth && !this.isOutDate(day.day)) {
         for (let i = 0; i < this.choosedDays.length; i++) {
           let curChooseDay = this.choosedDays[i]
           if (curChooseDay.day === day.day) {

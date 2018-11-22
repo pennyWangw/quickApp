@@ -1,7 +1,7 @@
 {
   "package": "com.penny.basetemprature",
   "name": "基础体温记录小助手",
-  "versionName": "1.0.0",
+  "versionName": "1.0.1",
   "versionCode": "1",
   "minPlatformVersion": "101",
   "icon": "/Common/logo.png",

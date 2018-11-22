@@ -107,7 +107,7 @@ exports.default = {
   createShortcut: _util2.default.createShortcut,
   dateFormat: _util2.default.dateFormat
 };
-(exports.default || module.exports).manifest = {"package":"com.penny.basetemprature","name":"基础体温记录小助手","versionName":"1.0.0","versionCode":"1","minPlatformVersion":"101","icon":"/Common/logo.png","features":[{"name":"system.prompt"},{"name":"system.router"},{"name":"system.shortcut"}],"permissions":[{"origin":"*"}],"config":{"logLevel":"debug","designWidth":750},"router":{"entry":"Home","pages":{"Home":{"component":"index"},"Detail":{"component":"index"},"About":{"component":"index"}}},"display":{"titleBar":false,"menu":true,"fullScreen":true,"pages":{"Home":{"titleBar":false,"fullScreen":true,"menu":false},"Detail":{"titleBarText":"基础体温记录小助手"},"About":{"menu":false}}}};
+(exports.default || module.exports).manifest = {"package":"com.penny.basetemprature","name":"基础体温记录小助手","versionName":"1.0.1","versionCode":"1","minPlatformVersion":"101","icon":"/Common/logo.png","features":[{"name":"system.prompt"},{"name":"system.router"},{"name":"system.shortcut"}],"permissions":[{"origin":"*"}],"config":{"logLevel":"debug","designWidth":750},"router":{"entry":"Home","pages":{"Home":{"component":"index"},"Detail":{"component":"index"},"About":{"component":"index"}}},"display":{"titleBar":false,"menu":true,"fullScreen":true,"pages":{"Home":{"titleBar":false,"fullScreen":true,"menu":false},"Detail":{"titleBarText":"基础体温记录小助手"},"About":{"menu":false}}}};
 }
 
 /***/ }),
@@ -208,7 +208,7 @@ exports.default = {
   else {
     window.createAppHandler = createAppHandler
     // H5注入manifest以获取features
-    global.manifest = {"package":"com.penny.basetemprature","name":"基础体温记录小助手","versionName":"1.0.0","versionCode":"1","minPlatformVersion":"101","icon":"/Common/logo.png","features":[{"name":"system.prompt"},{"name":"system.router"},{"name":"system.shortcut"}],"permissions":[{"origin":"*"}],"config":{"logLevel":"debug","designWidth":750},"router":{"entry":"Home","pages":{"Home":{"component":"index"},"Detail":{"component":"index"},"About":{"component":"index"}}},"display":{"titleBar":false,"menu":true,"fullScreen":true,"pages":{"Home":{"titleBar":false,"fullScreen":true,"menu":false},"Detail":{"titleBarText":"基础体温记录小助手"},"About":{"menu":false}}}};
+    global.manifest = {"package":"com.penny.basetemprature","name":"基础体温记录小助手","versionName":"1.0.1","versionCode":"1","minPlatformVersion":"101","icon":"/Common/logo.png","features":[{"name":"system.prompt"},{"name":"system.router"},{"name":"system.shortcut"}],"permissions":[{"origin":"*"}],"config":{"logLevel":"debug","designWidth":750},"router":{"entry":"Home","pages":{"Home":{"component":"index"},"Detail":{"component":"index"},"About":{"component":"index"}}},"display":{"titleBar":false,"menu":true,"fullScreen":true,"pages":{"Home":{"titleBar":false,"fullScreen":true,"menu":false},"Detail":{"titleBarText":"基础体温记录小助手"},"About":{"menu":false}}}};
   }
 })();
 //# sourceMappingURL=app.js.map

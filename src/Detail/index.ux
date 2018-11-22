@@ -59,7 +59,6 @@
         padding: 0 15px;
         /*height: 100%;*/
         flex-direction: column;
-        overflow: auto;
     }
     .introduce{
         width: 100%;
@@ -105,7 +104,7 @@
     }
     .picker{
         color: #ffffff;
-        font-size: 30px !important;
+        font-size: 30px;
     }
 </style>
 
@@ -119,11 +118,12 @@
       endDay: '2018-10-28',
       dataContent: [],
       allData: [],
-      drawComplete: false,
+      drawComplete: true,
       sectionLen: 16,
       storageData: [],
       startIndex: 0,
-      endIndex: 0
+      endIndex: 0,
+      afterHide: false
     },
     getChooseDayStor() {
       storage.get({
@@ -134,19 +134,22 @@
           this.endIndex = len
           if (len > this.sectionLen * 2) {
             this.startIndex = len - this.sectionLen * 2
-            this.allData = this.storageData.slice(this.startIndex, this.endIndex)
+            // this.allData = this.storageData.slice(this.startIndex, this.endIndex)
           } else {
             this.startIndex = 0
             this.endIndex = len
-            this.allData = this.storageData
           }
-          if (this.allData[0]) {
-            this.startDay = this.allData[0].day
-            this.endDay = this.allData[this.allData.length - 1].day
+          this.allData = this.storageData
+          let initDays = this.storageData.slice(this.startIndex, this.endIndex)
+          if (initDays[0]) {
+            this.startDay = initDays[0].day
+            this.endDay = initDays[initDays.length - 1].day
           } else {
             this.endDay = this.$app.$def.dateFormat(new Date())
+            this.startDay = this.endDay
           }
-          this.initDataContent(this.allData)
+          // console.log(this.startIndex, this.endIndex)
+          this.initDataContent(initDays)
         },
         fail: (data, code) => {
           this.allData = []
@@ -183,12 +186,13 @@
         if (endTime > lastTime) {
           this.endIndex =  this.allData.length
           this.anotherDraw()
+          this.anotherDraw()
         } else {
           this.allData.some((item, index) => {
             let curTime = new Date(item.day).getTime()
             let back = endTime < curTime || endTime === curTime
             if (back) {
-              this.endIndex =  index + 1
+              this.endIndex =  index
               this.anotherDraw()
               this.anotherDraw()
             }
@@ -198,10 +202,16 @@
       }
     },
     onShow() {
-      this.dataDrawCanvas()
+      if (!this.afterHide) {
+        this.dataDrawCanvas()
+      }
+    },
+    onHide() {
+      this.afterHide = true
     },
     dataDrawCanvas () {
-      if (!this.drawComplete) {
+      if (this.drawComplete) {
+        this.drawComplete = false
         this.dataContent.forEach((content, index) => {
           this.drawCanvas(content, index);
         })
@@ -209,13 +219,17 @@
     },
     anotherDraw () {
       this.initDataContent(this.allData.slice(this.startIndex, this.endIndex))
-      this.drawComplete = false
-      this.dataDrawCanvas()
+      // this.drawComplete = false
+      setTimeout(() => {
+        this.dataDrawCanvas()
+      })
+
     },
     drawCanvas(content, condex) {
       const canvas = this.$element(('newCanvas' + condex)); //获取 canvas 组件
       const ctx = canvas.getContext('2d'); //获取 canvas 绘图上下文
       ctx.clearRect(0,0,1000,1000);
+      ctx.save()
       ctx.beginPath();
       let marginleft = 12
       let margintop = 54
@@ -238,6 +252,7 @@
       // 画外框
       ctx.strokeStyle = '#eaeaea';
       ctx.lineJoin = 'miter'
+      ctx.lineWidth = 2
       ctx.moveTo(initX, initY);
       ctx.lineTo(initX, endY);
       ctx.moveTo(initX, endY);
@@ -281,8 +296,8 @@
       // 里面的竖线
       let xN = (endX - initX) / (this.sectionLen)
       ctx.beginPath();
-      for (let i = 0; i < this.sectionLen; i++) {
-        let x = initX + xN * i + xN
+      for (let j = 0; j < this.sectionLen; j++) {
+        let x = initX + xN * j + xN
         ctx.moveTo(x, initY);
         ctx.lineTo(x, endY - 1);
       }
@@ -402,10 +417,8 @@
       if (condex === this.dataContent.length - 1) {
         this.drawComplete = true;
       }
-      //
     },
     drowImg(ctx, x, y, src){
-      console.log(src)
       const img = new Image(); //新建图像对象
       img.src = src; //加载本地图片
 

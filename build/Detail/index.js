@@ -368,8 +368,7 @@ module.exports = {
     "paddingRight": "15px",
     "paddingBottom": "0px",
     "paddingLeft": "15px",
-    "flexDirection": "column",
-    "overflow": "auto"
+    "flexDirection": "column"
   },
   ".introduce": {
     "width": "100%",
@@ -492,11 +491,12 @@ exports.default = {
     endDay: '2018-10-28',
     dataContent: [],
     allData: [],
-    drawComplete: false,
+    drawComplete: true,
     sectionLen: 16,
     storageData: [],
     startIndex: 0,
-    endIndex: 0
+    endIndex: 0,
+    afterHide: false
   },
   getChooseDayStor: function getChooseDayStor() {
     var _this = this;
@@ -509,19 +509,21 @@ exports.default = {
         _this.endIndex = len;
         if (len > _this.sectionLen * 2) {
           _this.startIndex = len - _this.sectionLen * 2;
-          _this.allData = _this.storageData.slice(_this.startIndex, _this.endIndex);
         } else {
           _this.startIndex = 0;
           _this.endIndex = len;
-          _this.allData = _this.storageData;
         }
-        if (_this.allData[0]) {
-          _this.startDay = _this.allData[0].day;
-          _this.endDay = _this.allData[_this.allData.length - 1].day;
+        _this.allData = _this.storageData;
+        var initDays = _this.storageData.slice(_this.startIndex, _this.endIndex);
+        if (initDays[0]) {
+          _this.startDay = initDays[0].day;
+          _this.endDay = initDays[initDays.length - 1].day;
         } else {
           _this.endDay = _this.$app.$def.dateFormat(new Date());
+          _this.startDay = _this.endDay;
         }
-        _this.initDataContent(_this.allData);
+
+        _this.initDataContent(initDays);
       },
       fail: function fail(data, code) {
         _this.allData = [];
@@ -562,12 +564,13 @@ exports.default = {
       if (endTime > lastTime) {
         this.endIndex = this.allData.length;
         this.anotherDraw();
+        this.anotherDraw();
       } else {
         this.allData.some(function (item, index) {
           var curTime = new Date(item.day).getTime();
           var back = endTime < curTime || endTime === curTime;
           if (back) {
-            _this3.endIndex = index + 1;
+            _this3.endIndex = index;
             _this3.anotherDraw();
             _this3.anotherDraw();
           }
@@ -577,28 +580,39 @@ exports.default = {
     }
   },
   onShow: function onShow() {
-    this.dataDrawCanvas();
+    if (!this.afterHide) {
+      this.dataDrawCanvas();
+    }
+  },
+  onHide: function onHide() {
+    this.afterHide = true;
   },
   dataDrawCanvas: function dataDrawCanvas() {
     var _this4 = this;
 
-    if (!this.drawComplete) {
+    if (this.drawComplete) {
+      this.drawComplete = false;
       this.dataContent.forEach(function (content, index) {
         _this4.drawCanvas(content, index);
       });
     }
   },
   anotherDraw: function anotherDraw() {
+    var _this5 = this;
+
     this.initDataContent(this.allData.slice(this.startIndex, this.endIndex));
-    this.drawComplete = false;
-    this.dataDrawCanvas();
+
+    setTimeout(function () {
+      _this5.dataDrawCanvas();
+    });
   },
   drawCanvas: function drawCanvas(content, condex) {
-    var _this5 = this;
+    var _this6 = this;
 
     var canvas = this.$element('newCanvas' + condex);
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, 1000, 1000);
+    ctx.save();
     ctx.beginPath();
     var marginleft = 12;
     var margintop = 54;
@@ -620,6 +634,7 @@ exports.default = {
 
     ctx.strokeStyle = '#eaeaea';
     ctx.lineJoin = 'miter';
+    ctx.lineWidth = 2;
     ctx.moveTo(initX, initY);
     ctx.lineTo(initX, endY);
     ctx.moveTo(initX, endY);
@@ -662,8 +677,8 @@ exports.default = {
 
     var xN = (endX - initX) / this.sectionLen;
     ctx.beginPath();
-    for (var _i = 0; _i < this.sectionLen; _i++) {
-      var x = initX + xN * _i + xN;
+    for (var j = 0; j < this.sectionLen; j++) {
+      var x = initX + xN * j + xN;
       ctx.moveTo(x, initY);
       ctx.lineTo(x, endY - 1);
     }
@@ -690,7 +705,7 @@ exports.default = {
 
         ctx.beginPath();
         if (lastY) {
-          if (_this5.getDays(item.day, content[index - 1].day) > 1) {
+          if (_this6.getDays(item.day, content[index - 1].day) > 1) {
             ctx.moveTo(x, y);
           } else {
             ctx.moveTo(lastX, lastY);
@@ -706,14 +721,14 @@ exports.default = {
 
         ctx.beginPath();
         if (item.sexLife) {
-          _this5.drowImg(ctx, x, y, '/Common/icon_sex.png');
+          _this6.drowImg(ctx, x, y, '/Common/icon_sex.png');
           if (item.sexTime !== '请选择时间') {
             ctx.font = '14px';
             ctx.fillText(item.sexTime, x - 16, charInitY);
             charInitY += 16;
           }
         } else {
-          _this5.drowImg(ctx, x, y, '/Common/icon_temperature.png');
+          _this6.drowImg(ctx, x, y, '/Common/icon_temperature.png');
         }
         ctx.stroke();
       } else {
@@ -723,7 +738,7 @@ exports.default = {
           charInitY += 16;
         }
         if (item.sexLife) {
-          _this5.drowImg(ctx, x, charInitY, '/Common/icon_sex.png');
+          _this6.drowImg(ctx, x, charInitY, '/Common/icon_sex.png');
           charInitY += 25;
           if (item.sexTime !== '请选择时间') {
             ctx.fillText(item.sexTime, x - 14, charInitY);
@@ -753,22 +768,22 @@ exports.default = {
 
       ctx.font = '18px';
 
-      for (var j = 0; j < item.otherText.length; j++) {
-        var char = item.otherText[j];
-        if (j === 0) {
+      for (var _j = 0; _j < item.otherText.length; _j++) {
+        var char = item.otherText[_j];
+        if (_j === 0) {
           charInitY += 12;
         }
-        ctx.fillText(char, x - 8, charInitY + j * 22);
+        ctx.fillText(char, x - 8, charInitY + _j * 22);
       }
 
       if (item.isPeriod) {
         var pY = initY + n / 2;
         if (item.periodNum === '量少') {
-          _this5.drowImg(ctx, x, pY, '/Common/icon_less.png');
+          _this6.drowImg(ctx, x, pY, '/Common/icon_less.png');
         } else if (item.periodNum === '量多') {
-          _this5.drowImg(ctx, x, pY, '/Common/icon_many.png');
+          _this6.drowImg(ctx, x, pY, '/Common/icon_many.png');
         } else {
-          _this5.drowImg(ctx, x, pY, '/Common/icon_normal.png');
+          _this6.drowImg(ctx, x, pY, '/Common/icon_normal.png');
         }
       }
       lastX = x;
@@ -780,7 +795,6 @@ exports.default = {
     }
   },
   drowImg: function drowImg(ctx, x, y, src) {
-    console.log(src);
     var img = new Image();
     img.src = src;
 
@@ -841,7 +855,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = [{
-  day: '2018-09-01',
+  day: '2018-09-28',
+  tempValue: 36.1,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: false,
+  periodNum: '',
+  otherText: ''
+}, {
+  day: '2018-09-29',
   tempValue: 36.5,
   sexLife: false,
   sexTime: '请选择时间',
@@ -849,85 +871,69 @@ exports.default = [{
   periodNum: '',
   otherText: ''
 }, {
-  day: '2018-09-02',
-  tempValue: 36.8,
-  sexLife: false,
-  sexTime: '请选择时间',
+  day: '2018-09-30',
+  tempValue: 36.6,
+  sexLife: true,
+  sexTime: '06:00',
   isPeriod: false,
   periodNum: '',
   otherText: ''
 }, {
-  day: '2018-09-03',
-  tempValue: 36.7,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: false,
-  periodNum: '',
-  otherText: ''
-}, {
-  day: '2018-09-04',
-  tempValue: 36.2,
+  day: '2018-10-01',
+  tempValue: 36.6,
   sexLife: true,
   sexTime: '21:00',
   isPeriod: false,
   periodNum: '',
-  otherText: ''
+  otherText: '52453754'
 }, {
-  day: '2018-09-05',
-  tempValue: 36.9,
-  sexLife: true,
-  sexTime: '23:00',
-  isPeriod: false,
-  periodNum: '',
-  otherText: ''
-}, {
-  day: '2018-09-06',
-  tempValue: 36.5,
+  day: '2018-10-02',
+  tempValue: 36.8,
   sexLife: false,
   sexTime: '请选择时间',
   isPeriod: true,
   periodNum: '量少',
   otherText: '腹痛'
 }, {
-  day: '2018-09-07',
-  tempValue: 36.7,
+  day: '2018-10-03',
+  tempValue: 36.9,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-04',
+  tempValue: 36.2,
+  sexLife: true,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-05',
+  tempValue: 36.3,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量多',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-06',
+  tempValue: 36.5,
+  sexLife: false,
+  sexTime: '请选择时间',
+  isPeriod: true,
+  periodNum: '量正常',
+  otherText: '腹痛'
+}, {
+  day: '2018-10-07',
+  tempValue: 36.2,
   sexLife: false,
   sexTime: '请选择时间',
   isPeriod: true,
   periodNum: '量少',
-  otherText: ''
-}, {
-  day: '2018-09-08',
-  tempValue: 36.5,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: true,
-  periodNum: '量正常',
-  otherText: ''
-}, {
-  day: '2018-09-09',
-  tempValue: 36.5,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: true,
-  periodNum: '量正常',
-  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhs'
-}, {
-  day: '2018-09-10',
-  tempValue: 36.5,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: true,
-  periodNum: '量正常',
-  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
-}, {
-  day: '2018-09-11',
-  tempValue: 36.5,
-  sexLife: false,
-  sexTime: '请选择时间',
-  isPeriod: true,
-  periodNum: '量正常',
-  otherText: 'hahahhahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+  otherText: '腹痛'
 }];
 
 /***/ })

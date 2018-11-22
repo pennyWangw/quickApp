@@ -1032,7 +1032,7 @@ exports.default = {
   },
   getCurDay: function getCurDay(day, index) {
     this.dayIndex = index;
-    if (day.curMonth) {
+    if (day.curMonth && !this.isOutDate(day.day)) {
       for (var i = 0; i < this.choosedDays.length; i++) {
         var curChooseDay = this.choosedDays[i];
         if (curChooseDay.day === day.day) {
