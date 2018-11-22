@@ -301,30 +301,73 @@ module.exports = {
       ]
     },
     {
-      "type": "div",
+      "type": "list",
       "attr": {},
       "classList": [
         "content-page"
       ],
+      "events": {
+        "scrollbottom": "loadMoreData"
+      },
       "children": [
         {
           "type": "block",
           "attr": {},
           "repeat": {
-            "exp": function () {return this.dataContent},
+            "exp": function () {return this.showData},
             "key": "index",
             "value": "content"
           },
           "children": [
             {
-              "type": "canvas",
+              "type": "list-item",
               "attr": {
-                "id": function () {return 'newCanvas'+this.index}
+                "type": "product"
               },
-              "classList": [
-                "new_canvas"
-              ],
-              "id": function () {return 'newCanvas'+this.index}
+              "children": [
+                {
+                  "type": "canvas",
+                  "attr": {
+                    "id": function () {return 'newCanvas'+this.index}
+                  },
+                  "classList": [
+                    "new_canvas"
+                  ],
+                  "id": function () {return 'newCanvas'+this.index}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "attr": {
+            "type": "loadMore"
+          },
+          "classList": [
+            "load-status"
+          ],
+          "children": [
+            {
+              "type": "progress",
+              "attr": {
+                "type": "circular",
+                "show": function () {return this.hasMoreData}
+              }
+            },
+            {
+              "type": "text",
+              "attr": {
+                "show": function () {return this.hasMoreData},
+                "value": "加载更多"
+              }
+            },
+            {
+              "type": "text",
+              "attr": {
+                "show": function () {return !this.hasMoreData},
+                "value": "没有更多了~"
+              }
             }
           ]
         }
@@ -460,6 +503,9 @@ module.exports = {
   ".picker": {
     "color": "#ffffff",
     "fontSize": "30px"
+  },
+  ".load-status": {
+    "justifyContent": "center"
   }
 }
 
@@ -475,9 +521,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _data = __webpack_require__(11);
+var _data2 = __webpack_require__(11);
 
-var _data2 = _interopRequireDefault(_data);
+var _data3 = _interopRequireDefault(_data2);
 
 var _system = $app_require$('@app-module/system.storage');
 
@@ -496,7 +542,9 @@ exports.default = {
     storageData: [],
     startIndex: 0,
     endIndex: 0,
-    afterHide: false
+    afterHide: false,
+    showData: [],
+    hasMoreData: true
   },
   getChooseDayStor: function getChooseDayStor() {
     var _this = this;
@@ -534,6 +582,13 @@ exports.default = {
     this.dataContent = [];
     for (var i = 0, len = allData.length; i < len; i += this.sectionLen) {
       this.dataContent.push(allData.slice(i, i + this.sectionLen));
+    }
+    if (this.dataContent.length > 2) {
+      this.showData = this.dataContent.slice(0, 2);
+      this.hasMoreData = true;
+    } else {
+      this.showData = this.dataContent;
+      this.hasMoreData = false;
     }
   },
   chooseTime: function chooseTime(val) {
@@ -592,7 +647,7 @@ exports.default = {
 
     if (this.drawComplete) {
       this.drawComplete = false;
-      this.dataContent.forEach(function (content, index) {
+      this.showData.forEach(function (content, index) {
         _this4.drawCanvas(content, index);
       });
     }
@@ -601,7 +656,6 @@ exports.default = {
     var _this5 = this;
 
     this.initDataContent(this.allData.slice(this.startIndex, this.endIndex));
-
     setTimeout(function () {
       _this5.dataDrawCanvas();
     });
@@ -790,7 +844,7 @@ exports.default = {
       lastY = y;
     });
     ctx.closePath();
-    if (condex === this.dataContent.length - 1) {
+    if (condex === this.showData.length - 1) {
       this.drawComplete = true;
     }
   },
@@ -817,6 +871,19 @@ exports.default = {
   },
   onInit: function onInit() {
     this.getChooseDayStor();
+  },
+  loadMoreData: function loadMoreData() {
+    var _this7 = this;
+
+    if (this.showData.length < this.dataContent.length) {
+      var _data = this.dataContent[this.showData.length];
+      this.showData.push(_data);
+      setTimeout(function () {
+        _this7.drawCanvas(_data, _this7.showData.length - 1);
+      });
+    } else {
+      this.hasMoreData = false;
+    }
   }
 };
 

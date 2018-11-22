@@ -16,12 +16,21 @@
             <div><image src="/Common/temperature.png" class="tag-icon"></image><text class="texts">温度</text></div>
             <div><image src="/Common/sex.png" class="tag-icon"></image><text class="texts">有性生活</text></div>
         </div>
-        <div class="content-page">
-            <block for="(index, content) in dataContent">
-                <canvas class="new_canvas" id="{{'newCanvas' + index}}"></canvas>
+        <list class="content-page" onscrollbottom="loadMoreData">
+
+            <block for="(index, content) in showData">
+                <list-item type="product">
+                    <canvas class="new_canvas" id="{{'newCanvas' + index}}"></canvas>
+                </list-item>
             </block>
+
+            <list-item type="loadMore" class="load-status">
+                <progress type="circular" show="{{hasMoreData}}"></progress>
+                <text show="{{hasMoreData}}">加载更多</text>
+                <text show="{{!hasMoreData}}">没有更多了~</text>
+            </list-item>
             <!--<text>{{dataContent}}</text>-->
-        </div>
+        </list>
     </div>
 </template>
 
@@ -106,6 +115,9 @@
         color: #ffffff;
         font-size: 30px;
     }
+    .load-status{
+        justify-content: center;
+    }
 </style>
 
 <script>
@@ -123,7 +135,9 @@
       storageData: [],
       startIndex: 0,
       endIndex: 0,
-      afterHide: false
+      afterHide: false,
+      showData: [],
+      hasMoreData: true
     },
     getChooseDayStor() {
       storage.get({
@@ -161,6 +175,14 @@
       for(let i=0,len=allData.length;i<len;i+=this.sectionLen){
         this.dataContent.push(allData.slice(i,i+this.sectionLen));
       }
+      if (this.dataContent.length > 2) {
+        this.showData = this.dataContent.slice(0, 2)
+        this.hasMoreData = true
+      } else {
+        this.showData = this.dataContent
+        this.hasMoreData = false
+      }
+
     },
     chooseTime(val) {
       this.startDay = (val.year + '-' + (val.month + 1 < 10 ? ('0' + (val.month + 1)) : val.month + 1) + '-' + (val.day < 10 ? ('0' + val.day) : val.day))
@@ -212,14 +234,13 @@
     dataDrawCanvas () {
       if (this.drawComplete) {
         this.drawComplete = false
-        this.dataContent.forEach((content, index) => {
+        this.showData.forEach((content, index) => {
           this.drawCanvas(content, index);
         })
       }
     },
     anotherDraw () {
       this.initDataContent(this.allData.slice(this.startIndex, this.endIndex))
-      // this.drawComplete = false
       setTimeout(() => {
         this.dataDrawCanvas()
       })
@@ -414,7 +435,7 @@
         lastY = y
       })
       ctx.closePath();
-      if (condex === this.dataContent.length - 1) {
+      if (condex === this.showData.length - 1) {
         this.drawComplete = true;
       }
     },
@@ -442,6 +463,17 @@
     onInit() {
       this.getChooseDayStor()
       // this.dataContent = data
+    },
+    loadMoreData () {
+      if (this.showData.length < this.dataContent.length) {
+        let data = this.dataContent[this.showData.length]
+        this.showData.push(data)
+        setTimeout(() => {
+          this.drawCanvas(data, this.showData.length - 1)
+        })
+      } else {
+        this.hasMoreData = false
+      }
     }
   }
 </script>

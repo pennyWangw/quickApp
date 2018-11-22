@@ -1008,25 +1008,30 @@ exports.default = {
     this.year = event;
   },
   sureAdd: function sureAdd() {
-    if (this.clickDay.tempValue || this.clickDay.sexLife || this.clickDay.sexTime !== '请选择时间' || this.clickDay.isPeriod || this.clickDay.periodNum || this.clickDay.otherText) {
-      var haveDay = false;
-      for (var i = 0; i < this.choosedDays.length; i++) {
-        var curChooseDay = this.choosedDays[i];
-        if (curChooseDay.day === this.clickDay.day) {
-          this.choosedDays[i] = this.clickDay;
-          haveDay = true;
-          break;
-        }
+    var haveDay = false;
+    var index = void 0;
+    for (var i = 0; i < this.choosedDays.length; i++) {
+      var curChooseDay = this.choosedDays[i];
+      if (curChooseDay.day === this.clickDay.day) {
+        this.choosedDays[i] = this.clickDay;
+        index = i;
+        haveDay = true;
+        break;
       }
+    }
+    if (this.clickDay.tempValue || this.clickDay.sexLife || this.clickDay.sexTime !== '请选择时间' || this.clickDay.isPeriod || this.clickDay.periodNum || this.clickDay.otherText) {
       if (!haveDay) {
         this.choosedDays.push(this.clickDay);
       }
-
       this.choosedDays = this.choosedDays.sort(function (a, b) {
         return new Date(a.day) - new Date(b.day);
       });
-
       this.setChooseDayStor(this.choosedDays);
+    } else {
+      if (haveDay) {
+        this.choosedDays.splice(index, 1);
+        this.setChooseDayStor(this.choosedDays);
+      }
     }
     this.closePop();
   },
