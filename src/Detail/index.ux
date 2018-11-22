@@ -16,7 +16,7 @@
             <div><image src="/Common/temperature.png" class="tag-icon"></image><text class="texts">温度</text></div>
             <div><image src="/Common/sex.png" class="tag-icon"></image><text class="texts">有性生活</text></div>
         </div>
-        <list class="content-page" onscrollbottom="loadMoreData">
+        <list class="content-page" id="List" onscrollbottom="loadMoreData">
 
             <block for="(index, content) in showData">
                 <list-item type="product">
@@ -232,6 +232,7 @@
       this.afterHide = true
     },
     dataDrawCanvas () {
+      this.$element('List').scrollTo({index:0});
       if (this.drawComplete) {
         this.drawComplete = false
         this.showData.forEach((content, index) => {
@@ -410,14 +411,14 @@
           }
         }
         // 备注信息显示
-        ctx.font = '18px';
+        ctx.font = '17px';
 
         for (let j = 0; j < item.otherText.length; j++) {
           let char = item.otherText[j]
           if (j === 0) {
-            charInitY += 12
+            charInitY += 3
           }
-          ctx.fillText(char, x - 8, charInitY + j*22);
+          ctx.fillText(char, x - 8, charInitY + j*18);
         }
 
         // 月经信息显示
@@ -470,7 +471,7 @@
         this.showData.push(data)
         setTimeout(() => {
           this.drawCanvas(data, this.showData.length - 1)
-        })
+        }, 100)
       } else {
         this.hasMoreData = false
       }

@@ -55,7 +55,7 @@
                     </div>
                     <div class="row-inline">
                         <text class="title-area">备注:</text>
-                        <textarea maxlength="20" class="text-are" onchange="getText" value="{{clickDay.otherText}}"></textarea>
+                        <textarea maxlength="10" class="text-are" onchange="getText" value="{{clickDay.otherText}}"></textarea>
                     </div>
                     <div class="row-inline right-algn">
                         <text class="btn" onclick="closePop">取消</text>

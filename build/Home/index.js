@@ -527,7 +527,7 @@ module.exports = {
                     {
                       "type": "textarea",
                       "attr": {
-                        "maxlength": "20",
+                        "maxlength": "10",
                         "value": function () {return this.clickDay.otherText}
                       },
                       "classList": [

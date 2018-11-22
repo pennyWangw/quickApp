@@ -302,10 +302,13 @@ module.exports = {
     },
     {
       "type": "list",
-      "attr": {},
+      "attr": {
+        "id": "List"
+      },
       "classList": [
         "content-page"
       ],
+      "id": "List",
       "events": {
         "scrollbottom": "loadMoreData"
       },
@@ -645,6 +648,7 @@ exports.default = {
   dataDrawCanvas: function dataDrawCanvas() {
     var _this4 = this;
 
+    this.$element('List').scrollTo({ index: 0 });
     if (this.drawComplete) {
       this.drawComplete = false;
       this.showData.forEach(function (content, index) {
@@ -820,14 +824,14 @@ exports.default = {
         }
       }
 
-      ctx.font = '18px';
+      ctx.font = '17px';
 
       for (var _j = 0; _j < item.otherText.length; _j++) {
         var char = item.otherText[_j];
         if (_j === 0) {
-          charInitY += 12;
+          charInitY += 3;
         }
-        ctx.fillText(char, x - 8, charInitY + _j * 22);
+        ctx.fillText(char, x - 8, charInitY + _j * 18);
       }
 
       if (item.isPeriod) {
@@ -880,7 +884,7 @@ exports.default = {
       this.showData.push(_data);
       setTimeout(function () {
         _this7.drawCanvas(_data, _this7.showData.length - 1);
-      });
+      }, 100);
     } else {
       this.hasMoreData = false;
     }
